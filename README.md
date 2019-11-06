@@ -1,4 +1,4 @@
-# sms_open_source (Social Media Sieve, open source edition)
+# sms_open_source (Social Media Sieve)
 Big data analytics for social media
 
 ## Tools and technologies
