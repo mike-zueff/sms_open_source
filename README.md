@@ -27,10 +27,11 @@ mkdir private
 echo "-GROUP_1" > private/groups_watched
 echo "-GROUP_N" > private/groups_watched
 
+echo "/PATTERN_1/i" > private/patterns_common
+echo "/PATTERN_N/i" > private/patterns_common
+
 echo "TOKEN" > private/vk_api_token
 ./sms.php
-TODO
-touch config/private_patterns
 ```
 
 ## Credits
