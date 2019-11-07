@@ -20,7 +20,7 @@ Big data analytics for social media
 ```
 git clone https://github.com/mike-zueff/sms_open_source.git
 cd sms_open_source
-composer update
+composer require vkcom/vk-php-sdk
 mkdir private
 
 echo "-GROUP_1" > private/groups_watched
