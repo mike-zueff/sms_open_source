@@ -24,8 +24,7 @@ composer require vkcom/vk-php-sdk
 mkdir private
 
 echo "-GROUP_1" > private/groups_watched
-echo "-GROUP_2" > private/groups_watched
-echo "-GROUP_3" > private/groups_watched
+echo "-GROUP_N" > private/groups_watched
 
 echo "TOKEN" > private/vk_api_token
 ./sms.php
