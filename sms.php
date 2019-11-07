@@ -7,4 +7,4 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/lib/lib.php';
 
-sms_groups_watched_get_data();
+//sms_groups_watched_get_data();
