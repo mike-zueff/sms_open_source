@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "psr-4" : {
+            "App\\": "sqlite/"
+        }
+    },
+    "require": {
+        "vkcom/vk-php-sdk": "^5.101"
+    }
+}
