@@ -1,4 +1,5 @@
 composer.json
 composer.lock
+data/sms_db.sqlite
 private
 vendor
