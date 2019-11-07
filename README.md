@@ -20,16 +20,12 @@ Big data analytics for social media
 ```
 git clone https://github.com/mike-zueff/sms_open_source.git
 cd sms_open_source
+composer require vkcom/vk-php-sdk
+mkdir private
+echo "TOKEN" > private/vk_api_token
+php sms.php
 TODO
 cat database/init.sql | sqlite3 database/sms_db_sqlite
-cat > config/private_vk_api_current_token.json <<EOF
-{
-  "access_token": "TOKEN",
-  "email": "EMAIL",
-  "expires_in": 0,
-  "user_id": ID
-}
-EOF
 touch config/private_patterns
 cargo run
 ```
