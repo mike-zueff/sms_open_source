@@ -22,12 +22,16 @@ git clone https://github.com/mike-zueff/sms_open_source.git
 cd sms_open_source
 composer require vkcom/vk-php-sdk
 mkdir private
+
+echo "-GROUP_1" > private/groups_watched
+echo "-GROUP_2" > private/groups_watched
+echo "-GROUP_3" > private/groups_watched
+
 echo "TOKEN" > private/vk_api_token
-php sms.php
+./sms.php
 TODO
 cat database/init.sql | sqlite3 database/sms_db_sqlite
 touch config/private_patterns
-cargo run
 ```
 
 ## Credits
