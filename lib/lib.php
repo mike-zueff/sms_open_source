@@ -5,7 +5,7 @@ const B_DEBUG_ENABLED = true;
 
 /* Materials older than 6 years are obsolete. */
 /* TODO const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 366 * 6; */
-const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 3;
+const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 1;
 
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
@@ -29,21 +29,20 @@ function sms_groups_watched_fetch() {
 
     do {
       $o_result = sms_vk_api_wall_get($s_gw, $i_offset);
-      //////////////////////////////////////////////// TODO
+
       if ($o_result != null) {
-        echo "!!!!";
         foreach ($o_result['items'] as $o_ri) {
-          if ($o_sqlite->querySingle('SELECT * FROM wall_get WHERE post_id = ', $o_ri['id']) != null) {
-            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!" . PHP_EOL;
+          $i_db_post_id = $o_ri['id'];
+
+          if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE post_id = $i_db_post_id") != null) {
             break;
           } else {
             $i_db_date = $o_ri['date'];
             $i_db_from_id = $o_ri['from_id'];
             $i_db_owner_id = $o_ri['owner_id'];
-            $i_db_post_id = $o_ri['id'];
             $s_db_text = $o_ri['text'];
 
-            $o_sqlite->exec("INSERT INTO wall_get(date, from_id, owner_id, post_id, text) VALUES('$i_db_date', '$i_db_from_id', '$i_db_owner_id', '$i_db_post_id', '$s_db_text')");
+            $o_sqlite->exec("INSERT INTO wall_get(date, from_id, owner_id, post_id, text) VALUES($i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
           }
         }
       } else {
@@ -51,6 +50,7 @@ function sms_groups_watched_fetch() {
         break;
       }
       //////////////////TODO while ($o_response['items'][1]['date'] >= $i_timestamp - I_MATERIAL_DATE_LIMIT);
+
       $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
     } while (true);
   }
