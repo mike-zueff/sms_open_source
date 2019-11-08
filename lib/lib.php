@@ -20,6 +20,7 @@ function sms_echo($s_message) {
 }
 
 function sms_groups_watched_fetch() {
+  global $i_timestamp;
   global $o_sqlite;
 
   $a_groups_watched = file('private/groups_watched.txt', FILE_IGNORE_NEW_LINES);
@@ -28,6 +29,7 @@ function sms_groups_watched_fetch() {
     $i_offset = 0;
 
     do {
+      $b_need_to_stop = false;
       $o_result = sms_vk_api_wall_get($s_gw, $i_offset);
 
       if ($o_result != null) {
@@ -35,6 +37,7 @@ function sms_groups_watched_fetch() {
           $i_db_post_id = $o_ri['id'];
 
           if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE post_id = $i_db_post_id") != null) {
+            $b_need_to_stop = true;
             break;
           } else {
             $i_db_date = $o_ri['date'];
@@ -49,10 +52,9 @@ function sms_groups_watched_fetch() {
         sms_log('error, wall.get, https://vk.com/wall-' . $s_gw . '?own=1&offset=' . $i_offset);
         break;
       }
-      //////////////////TODO while ($o_response['items'][1]['date'] >= $i_timestamp - I_MATERIAL_DATE_LIMIT);
 
       $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
-    } while (true);
+    } while (!$b_need_to_stop && $i_timestamp <= $o_result['items'][1]['date'] + I_MATERIAL_DATE_LIMIT);
   }
 }
 
