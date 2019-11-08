@@ -2,6 +2,11 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
+
+/* Materials older than 6 years are obsolete. */
+/* TODO const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 366 * 6; */
+const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 3;
+
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_debug($s_message) {
@@ -25,7 +30,6 @@ function sms_groups_watched_fetch() {
     do {
       $o_result = sms_vk_api_wall_get($s_gw, $i_offset);
       //////////////////////////////////////////////// TODO
-
       if ($o_result != null) {
         echo "!!!!";
         foreach ($o_result['items'] as $o_ri) {
@@ -46,9 +50,7 @@ function sms_groups_watched_fetch() {
         sms_log('error, wall.get, https://vk.com/wall-' . $s_gw . '?own=1&offset=' . $i_offset);
         break;
       }
-
-      //////////////////////////////////////////////// TODO
-      //TODO while ($o_response['items'][1]['date'] >= $i_timestamp - I_MATERIAL_DATE_LIMIT);
+      //////////////////TODO while ($o_response['items'][1]['date'] >= $i_timestamp - I_MATERIAL_DATE_LIMIT);
       $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
     } while (true);
   }
@@ -97,6 +99,3 @@ $i_timestamp = time();
 register_shutdown_function('sms_shutdown');
 sms_echo('SMS started.');
 //TODO $o_settlements = json_decode(file_get_contents('data/vor_obl_settlements.json'));
-//TODO Materials older than 6 years are obsolete.
-//TODO const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 366 * 6;
-//TODO const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 2;
