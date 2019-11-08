@@ -5,7 +5,7 @@ const B_DEBUG_ENABLED = true;
 
 /* Materials older than 6 years are obsolete. */
 /* TODO const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 366 * 6; */
-const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 1;
+const I_MATERIAL_DATE_LIMIT = 60 * 60 * 7;
 
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
@@ -17,45 +17,6 @@ function sms_debug($s_message) {
 
 function sms_echo($s_message) {
   echo $s_message . PHP_EOL;
-}
-
-function sms_groups_watched_fetch() {
-  global $i_timestamp;
-  global $o_sqlite;
-
-  $a_groups_watched = file('private/groups_watched.txt', FILE_IGNORE_NEW_LINES);
-
-  foreach ($a_groups_watched as $s_gw) {
-    $i_offset = 0;
-
-    do {
-      $b_need_to_stop = false;
-      $o_result = sms_vk_api_wall_get($s_gw, $i_offset);
-
-      if ($o_result != null) {
-        foreach ($o_result['items'] as $o_ri) {
-          $i_db_post_id = $o_ri['id'];
-
-          if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE post_id = $i_db_post_id") != null) {
-            $b_need_to_stop = true;
-            break;
-          } else {
-            $i_db_date = $o_ri['date'];
-            $i_db_from_id = $o_ri['from_id'];
-            $i_db_owner_id = $o_ri['owner_id'];
-            $s_db_text = $o_ri['text'];
-
-            $o_sqlite->exec("INSERT INTO wall_get(date, from_id, owner_id, post_id, text) VALUES($i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
-          }
-        }
-      } else {
-        sms_log('error, wall.get, https://vk.com/wall-' . $s_gw . '?own=1&offset=' . $i_offset);
-        break;
-      }
-
-      $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
-    } while (!$b_need_to_stop && $i_timestamp <= $o_result['items'][1]['date'] + I_MATERIAL_DATE_LIMIT);
-  }
 }
 
 function sms_log($s_message) {
@@ -88,6 +49,53 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
     return $o_response;
   } catch (Exception $e) {
     return null;
+  }
+}
+
+function sms_watched_groups_wall_get() {
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $a_watched_groups = file('private/watched_groups.txt', FILE_IGNORE_NEW_LINES);
+
+  foreach ($a_watched_groups as $s_wg) {
+    $i_offset = 0;
+
+    do {
+      $b_need_for_break = false;
+      $o_result = sms_vk_api_wall_get($s_wg, $i_offset);
+
+      if ($o_result != null) {
+        foreach ($o_result['items'] as $o_ri) {
+          $i_db_post_id = $o_ri['id'];
+
+          if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE post_id = $i_db_post_id") != null) {
+            if (!array_key_exists('is_pinned', $o_ri)) {
+              $b_need_for_break = true;
+              break;
+            } else {
+              continue;
+            }
+          } else {
+            $i_db_date = $o_ri['date'];
+            $i_db_from_id = $o_ri['from_id'];
+            $i_db_owner_id = $o_ri['owner_id'];
+            $s_db_text = $o_ri['text'];
+
+            $o_sqlite->exec("INSERT INTO wall_get(date, from_id, owner_id, post_id, text) VALUES($i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
+          }
+        }
+      } else {
+        sms_log('error, wall.get, https://vk.com/wall-' . $s_wg . '?own=1&offset=' . $i_offset);
+        break;
+      }
+
+      $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
+
+      if ($b_need_for_break || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_MATERIAL_DATE_LIMIT) {
+        break;
+      }
+    } while (true);
   }
 }
 
