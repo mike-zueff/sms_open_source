@@ -1,5 +1,7 @@
 composer.json
 composer.lock
+data/log.txt
 data/sms_db.sqlite
+data/sms_db.sqlite-journal
 private
 vendor

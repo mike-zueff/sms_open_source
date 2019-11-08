@@ -24,16 +24,17 @@ cat data/init.sql | sqlite3 data/sms_db.sqlite
 composer require vkcom/vk-php-sdk
 mkdir private
 
-echo "-GROUP_1" > private/groups_watched
-echo "-GROUP_2" > private/groups_watched
-echo "-GROUP_3" > private/groups_watched
+echo "-GROUP_1" > private/groups_watched.txt
+echo "-GROUP_2" > private/groups_watched.txt
+echo "-GROUP_3" > private/groups_watched.txt
 
-echo "/PATTERN_1/i" > private/patterns_common
-echo "/PATTERN_2/i" > private/patterns_common
-echo "/PATTERN_3/i" > private/patterns_common
+echo "/PATTERN_1/i" > private/patterns_common.txt
+echo "/PATTERN_2/i" > private/patterns_common.txt
+echo "/PATTERN_3/i" > private/patterns_common.txt
 
-echo "TOKEN" > private/vk_api_token
+echo "TOKEN" > private/vk_api_token.txt
 ./sms.php
+vim data/log.txt
 ```
 
 ## Credits
