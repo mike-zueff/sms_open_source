@@ -2,11 +2,9 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
-
-/* Materials older than 6 years are obsolete. */
-/* TODO const I_MATERIAL_DATE_LIMIT = 60 * 60 * 24 * 366 * 6; */
-const I_MATERIAL_DATE_LIMIT = 60 * 60 * 7;
-
+/* TODO Fix all limits. */
+const I_DATE_LIMIT_WALL_GET_GROUP = 60 * 60 * 24 * 1;
+const I_DATE_LIMIT_WALL_GET_USER = 60 * 60 * 24 * 26;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_debug($s_message) {
@@ -72,6 +70,7 @@ function sms_watched_groups_wall_get() {
           if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE post_id = $i_db_post_id") != null) {
             if (!array_key_exists('is_pinned', $o_ri)) {
               $b_need_for_break = true;
+
               break;
             } else {
               continue;
@@ -92,7 +91,7 @@ function sms_watched_groups_wall_get() {
 
       $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
 
-      if ($b_need_for_break || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_MATERIAL_DATE_LIMIT) {
+      if ($b_need_for_break || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_DATE_LIMIT_WALL_GET_GROUP) {
         break;
       }
     } while (true);
