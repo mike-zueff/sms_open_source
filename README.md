@@ -24,9 +24,9 @@ cat data/init.sql | sqlite3 data/sms_db.sqlite
 composer require vkcom/vk-php-sdk
 mkdir private
 
-echo "-GROUP_1" > private/groups_watched.txt
-echo "-GROUP_2" > private/groups_watched.txt
-echo "-GROUP_3" > private/groups_watched.txt
+echo "-GROUP_1" > private/watched_groups.txt
+echo "-GROUP_2" > private/watched_groups.txt
+echo "-GROUP_3" > private/watched_groups.txt
 
 echo "/PATTERN_1/i" > private/patterns_common.txt
 echo "/PATTERN_2/i" > private/patterns_common.txt
