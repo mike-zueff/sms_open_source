@@ -1,4 +1,5 @@
 CREATE TABLE wall_get (
+  attachments text,
   city_id integer,
   date integer,
   from_id integer,
@@ -8,6 +9,7 @@ CREATE TABLE wall_get (
 );
 
 CREATE TABLE wall_get_comments (
+  attachments text,
   city_id integer,
   comment_id integer,
   date integer,
