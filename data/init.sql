@@ -1,6 +1,8 @@
-CREATE TABLE settlements (
-  user_or_group_id integer,
-  settlement_id integer
+CREATE TABLE users (
+  first_name text,
+  last_name text,
+  settlement_id integer,
+  user_id integer
 );
 
 CREATE TABLE wall_get (

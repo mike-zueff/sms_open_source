@@ -10,6 +10,33 @@ const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 10; //100 TODO
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 10; //100 TODO
 
 function sms_db_analyze_data() {
+  global $o_sqlite;
+
+  $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
+
+  while ($a_ci = $a_db_data_comments->fetchArray()) {
+    if (sms_settlement_check($a_ci['settlement_id'])) {
+      $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
+      sms_log('********************************************************************************');
+
+      if ($a_ci['from_id'] > 0) {
+        $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
+        sms_log('Имя: ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . '.');
+
+        if ($a_settlement_data['district'] != '' ) {
+          sms_log('Откуда: ' . $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . '.');
+        } else {
+          sms_log('Откуда: ' . $a_settlement_data['settlement'] . '.');
+        }
+      }
+    }
+  }
+  /*
+        if ( preg_match($e_w_m, $resp_i['text']) != 0 ) {
+          echo 'https://vk.com/wall' . $bf . '_' . $resp_i['id'] . PHP_EOL;
+          echo 'GREP: ' . $e_w_m . PHP_EOL;
+        }
+  }*/
 }
 
 function sms_db_posts_fetch_comments() {
@@ -51,7 +78,8 @@ function sms_db_posts_fetch_comments() {
               $s_db_attachments = base64_encode('');
             }
 
-            $i_db_settlement_id = sms_user_fetch_settlement_id($i_db_from_id);
+            $a_db_user_data = sms_user_fetch_data($i_db_from_id);
+            $i_db_settlement_id = $a_db_user_data['settlement_id'];
 
             $o_sqlite->exec("INSERT INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_comment_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_parent_comment_id, $i_db_post_id, '$s_db_text')");
 
@@ -81,7 +109,8 @@ function sms_db_posts_fetch_comments() {
                         $s_db_attachments_nested = base64_encode('');
                       }
 
-                      $i_db_settlement_id_nested = sms_user_fetch_settlement_id($i_db_from_id_nested);
+                      $a_db_user_data_nested = sms_user_fetch_data($i_db_from_id_nested);
+                      $i_db_settlement_id_nested = $a_db_user_data_nested['settlement_id'];
 
                       if (sms_settlement_check($i_db_settlement_id_nested)) {
                         $o_sqlite->exec("INSERT INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_settlement_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
@@ -141,6 +170,26 @@ function sms_settlement_check($i_settlement_id) {
   return false;
 }
 
+function sms_settlement_fetch_data($i_settlement_id) {
+  global $a_settlements;
+
+  $a_settlement_data = [];
+
+  foreach ($a_settlements['items'] as $a_si) {
+    if ($a_si['id'] == $i_settlement_id) {
+      if (array_key_exists('area', $a_si)) {
+        $a_settlement_data['district'] = $a_si['area'];
+      } else {
+        $a_settlement_data['district'] = '';
+      }
+
+      $a_settlement_data['settlement'] = $a_si['title'];
+
+      return $a_settlement_data;
+    }
+  }
+}
+
 function sms_shutdown() {
   global $r_log_file;
 
@@ -148,29 +197,45 @@ function sms_shutdown() {
   sms_echo('SMS stopped.');
 }
 
-function sms_user_fetch_settlement_id($i_user_id) {
+function sms_user_fetch_data($i_user_id) {
   global $o_sqlite;
 
-  $a_db_data_settlements = $o_sqlite->query("SELECT * FROM settlements WHERE user_or_group_id = $i_user_id");
+  $a_db_data_settlements = $o_sqlite->query("SELECT * FROM users WHERE user_id = $i_user_id");
+  $a_db_user_data = [];
   $i_settlement_id = I_NULL_VALUE;
+  $s_first_name = '';
+  $s_last_name = '';
 
   while ($a_si = $a_db_data_settlements->fetchArray()) {
     if (array_key_exists('settlement_id', $a_si)) {
-      return $a_si['settlement_id'];
+      $a_db_user_data['first_name'] = $a_si['first_name'];
+      $a_db_user_data['last_name'] = $a_si['last_name'];
+      $a_db_user_data['settlement_id'] = $a_si['settlement_id'];
+
+      return $a_db_user_data;
     }
   }
 
   if ($i_user_id > 0) {
     $o_result = sms_vk_api_user_get($i_user_id, 'city');
 
-    if ($o_result != null && array_key_exists('city', $o_result[0])) {
-      $i_settlement_id =  $o_result[0]['city']['id'];
+    if ($o_result != null) {
+      $s_first_name = base64_encode($o_result[0]['first_name']);
+      $s_last_name = base64_encode($o_result[0]['last_name']);
+
+      if (array_key_exists('city', $o_result[0])) {
+        $i_settlement_id =  $o_result[0]['city']['id'];
+      }
     }
   }
 
-  $o_sqlite->exec("INSERT INTO settlements(user_or_group_id, settlement_id) VALUES($i_user_id, $i_settlement_id)");
+  $o_sqlite->exec("INSERT INTO users(first_name, last_name, settlement_id, user_id) VALUES('$s_first_name', '$s_last_name', $i_settlement_id, $i_user_id)");
 
-  return $i_settlement_id;
+  $a_db_user_data['first_name'] = $s_first_name;
+  $a_db_user_data['last_name'] = $s_last_name;
+  $a_db_user_data['settlement_id'] = $i_settlement_id;
+
+  return $a_db_user_data;
 }
 
 function sms_vk_api_user_get($i_user_id, $s_fields) {
@@ -279,7 +344,8 @@ function sms_watched_owners_wall_get() {
               $s_db_attachments = base64_encode('');
             }
 
-            $i_db_settlement_id = sms_user_fetch_settlement_id($i_db_from_id);
+            $a_db_user_data = sms_user_fetch_data($i_db_from_id);
+            $i_db_settlement_id = $a_db_user_data['settlement_id'];
 
             $o_sqlite->exec("INSERT INTO wall_get(attachments, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
           }
