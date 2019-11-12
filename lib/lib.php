@@ -3,11 +3,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
 /* TODO Fix all limits. */
-const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 4 * 1;
-const I_DATE_LIMIT_WALL_GET = 60 * 60 * 4 * 1;
+const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 3;
+const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 3;
 const I_NULL_VALUE = -1;
-const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 5; //100 TODO
-const I_VK_API_WALL_GET_COUNT_DEFAULT = 5; //100 TODO
+const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100; //100 TODO
+const I_VK_API_WALL_GET_COUNT_DEFAULT = 100; //100 TODO
 
 function sms_db_analyze_data() {
 }
@@ -30,7 +30,7 @@ function sms_db_posts_fetch_comments() {
       $o_result = sms_vk_api_wall_getcomments($a_i['owner_id'], $a_i['post_id'], $i_offset, I_NULL_VALUE);
 
       if ($o_result != null) {
-        if (count($o_result['items']) != 0) {
+        if (empty($o_result['items'])) {
           $b_need_for_break = true;
         }
 
@@ -61,7 +61,7 @@ function sms_db_posts_fetch_comments() {
                 $o_result_nested = sms_vk_api_wall_getcomments($a_i['owner_id'], $a_i['post_id'], $i_offset_nested, $i_db_comment_id);
 
                 if ($o_result_nested != null) {
-                  if (count($o_result_nested['items']) != 0) {
+                  if (empty($o_result_nested['items'])) {
                     $b_need_for_break_nested = true;
                   }
 
