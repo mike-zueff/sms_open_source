@@ -9,7 +9,6 @@ require __DIR__ . '/lib/lib.php';
 
 $a_getopt = getopt('a');
 
-// TODO
 if (!array_key_exists('a', $a_getopt)) {
   sms_watched_owners_wall_get();
   sms_db_posts_fetch_comments();
