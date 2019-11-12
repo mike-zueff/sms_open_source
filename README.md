@@ -38,6 +38,8 @@ echo "/PATTERN_3/i" > private/patterns.txt
 echo "TOKEN" > private/vk_api_token.txt
 ./sms.php
 vim data/log.txt
+./sms.php -a
+vim data/log.txt
 ```
 
 ## Credits
