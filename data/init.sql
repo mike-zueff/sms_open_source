@@ -8,7 +8,7 @@ CREATE TABLE wall_get (
   text text
 );
 
-CREATE TABLE wall_get_comments (
+CREATE TABLE wall_getcomments (
   attachments text,
   city_id integer,
   comment_id integer,
