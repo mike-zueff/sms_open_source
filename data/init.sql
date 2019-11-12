@@ -1,3 +1,8 @@
+CREATE TABLE settlements (
+  user_or_group_id integer,
+  settlement_id integer
+);
+
 CREATE TABLE wall_get (
   attachments text,
   date integer,
