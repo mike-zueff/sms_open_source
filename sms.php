@@ -7,4 +7,11 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/lib/lib.php';
 
-sms_groups_watched_fetch();
+$a_getopt = getopt('a');
+
+if (!array_key_exists('a', $a_getopt)) {
+  //sms_watched_owners_wall_get();
+  sms_db_posts_fetch_comments();
+}
+
+//sms_analyze...

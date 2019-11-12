@@ -49,11 +49,7 @@ function sms_db_posts_fetch_comments() {
               $s_db_attachments = '';
             }
 
-            if (array_key_exists('city', $o_ri)) {
-              $i_db_city_id = $o_ri['city']['id'];
-            } else {
-              $i_db_city_id = I_NULL_VALUE;
-            }
+            $i_db_city_id = sms_user_fetch_city($i_db_from_id);
 
             $o_sqlite->exec("INSERT INTO wall_getcomments(attachments, city_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments', $i_db_city_id, $i_db_comment_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_parent_comment_id, $i_db_post_id, '$s_db_text')");
 
@@ -83,11 +79,7 @@ function sms_db_posts_fetch_comments() {
                         $s_db_attachments_nested = '';
                       }
 
-                      if (array_key_exists('city', $o_rin)) {
-                        $i_db_city_id_nested = $o_rin['city']['id'];
-                      } else {
-                        $i_db_city_id_nested = I_NULL_VALUE;
-                      }
+                      $i_db_city_id_nested = sms_user_fetch_city($i_db_from_id_nested);
 
                       $o_sqlite->exec("INSERT INTO wall_getcomments(attachments, city_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_city_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
                     }
@@ -136,11 +128,43 @@ function sms_shutdown() {
   sms_echo('SMS stopped.');
 }
 
+function sms_user_fetch_city($i_user_id) {
+  $o_result = sms_vk_api_user_get($i_user_id, 'city');
+
+  if ($o_result != null && array_key_exists('city', $o_result[0])) {
+    return $o_result[0]['city']['id'];
+  } else {
+    return -1;
+  }
+}
+
+function sms_vk_api_user_get($i_user_id, $s_fields) {
+  global $o_vk_api_client;
+  global $s_vk_api_token;
+
+  if ($i_user_id < 0) {
+    return null;
+  }
+
+  sms_debug('user.get | ' . $i_user_id . ' | ' . $s_fields);
+
+  try {
+    $o_response = $o_vk_api_client->users()->get($s_vk_api_token, [
+      'fields' => $s_fields,
+      'user_ids' => $i_user_id,
+    ]);
+
+    return $o_response;
+  } catch (Exception $e) {
+    return null;
+  }
+}
+
 function sms_vk_api_wall_get($i_owner_id, $i_offset) {
   global $o_vk_api_client;
   global $s_vk_api_token;
 
-  sms_debug('wall.get, ' . $i_owner_id . ', ' . $i_offset);
+  sms_debug('wall.get | ' . $i_owner_id . ' | ' . $i_offset);
 
   try {
     $o_response = $o_vk_api_client->wall()->get($s_vk_api_token, array(
@@ -161,7 +185,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
   global $o_vk_api_client;
   global $s_vk_api_token;
 
-  sms_debug('wall.getcomments, ' . $i_owner_id . ', ' . $i_post_id . ', ' . $i_offset . ', ' . $i_comment_id);
+  sms_debug('wall.getcomments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
 
   $a_getcomments = [
     'count' => I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT,
@@ -224,11 +248,7 @@ function sms_watched_owners_wall_get() {
               $s_db_attachments = '';
             }
 
-            if (array_key_exists('city', $o_ri)) {
-              $i_db_city_id = $o_ri['city']['id'];
-            } else {
-              $i_db_city_id = I_NULL_VALUE;
-            }
+            $i_db_city_id = sms_user_fetch_city($i_db_from_id);
 
             $o_sqlite->exec("INSERT INTO wall_get(attachments, city_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', $i_db_city_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
           }
