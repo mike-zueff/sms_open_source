@@ -24,24 +24,31 @@ cat data/init.sql | sqlite3 data/sms_db.sqlite
 composer require vkcom/vk-php-sdk
 mkdir private
 echo "TOKEN" > private/vk_api_token.txt
+touch private/items_{archived,on_hold}.txt
 
 echo "-GROUP_1" > private/watched_owners.txt
 echo "-GROUP_2" >> private/watched_owners.txt
 echo "-GROUP_3" >> private/watched_owners.txt
+
 echo "USER_1" >> private/watched_owners.txt
 echo "USER_2" >> private/watched_owners.txt
 echo "USER_3" >> private/watched_owners.txt
 
-echo "post|OWNER_ID|POST_ID" > private/items_ignored.txt
-echo "comment|OWNER_ID|POST_ID|COMMENT_ID" >> private/items_ignored.txt
-echo "nested_comment|OWNER_ID|POST_ID|THREAD_ID|COMMENT_ID" >> private/items_ignored.txt
-
-touch private/items_archived.txt
-touch private/items_on_hold.txt
-
 echo "/PATTERN_1/i" > private/patterns.txt
 echo "/PATTERN_2/i" >> private/patterns.txt
 echo "/PATTERN_3/i" >> private/patterns.txt
+
+echo "post|OWNER_ID_1|POST_ID_1" > private/items_ignored.txt
+echo "post|OWNER_ID_2|POST_ID_2" >> private/items_ignored.txt
+echo "post|OWNER_ID_3|POST_ID_3" >> private/items_ignored.txt
+
+echo "comment|OWNER_ID_1|POST_ID_1|COMMENT_ID_1" >> private/items_ignored.txt
+echo "comment|OWNER_ID_2|POST_ID_2|COMMENT_ID_2" >> private/items_ignored.txt
+echo "comment|OWNER_ID_3|POST_ID_3|COMMENT_ID_3" >> private/items_ignored.txt
+
+echo "nested_comment|OWNER_ID_1|POST_ID_1|THREAD_ID_1|COMMENT_ID_1" >> private/items_ignored.txt
+echo "nested_comment|OWNER_ID_2|POST_ID_2|THREAD_ID_2|COMMENT_ID_2" >> private/items_ignored.txt
+echo "nested_comment|OWNER_ID_3|POST_ID_3|THREAD_ID_3|COMMENT_ID_3" >> private/items_ignored.txt
 
 ./sms.php
 vim -o data/log.txt private/items_{on_hold,archived,ignored}.txt
