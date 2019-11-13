@@ -14,6 +14,9 @@ function sms_db_analyze_data_wall_get() {
 }
 
 function sms_db_analyze_data_wall_getcomments() {
+  global $a_items_archived;
+  global $a_items_ignored;
+  global $a_items_on_hold;
   global $a_patterns;
   global $o_sqlite;
 
@@ -24,22 +27,48 @@ function sms_db_analyze_data_wall_getcomments() {
       $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
 
       if ($a_ci['from_id'] > 0) {
+        if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
+          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_archived)) {
+            continue;
+          }
+
+          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_on_hold)) {
+            continue;
+          }
+
+          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_ignored)) {
+            continue;
+          }
+        } else {
+          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_archived)) {
+            continue;
+          }
+
+          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_on_hold)) {
+            continue;
+          }
+
+          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_ignored)) {
+            continue;
+          }
+        }
+
         $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
         sms_log('********************************************************************************');
-        sms_log('Имя: ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . '.');
+        sms_log(base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']));
 
         if ($a_settlement_data['district'] != '' ) {
-          sms_log('Откуда: ' . $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . '.');
+          sms_log($a_settlement_data['district'] . ', ' . $a_settlement_data['settlement']);
         } else {
-          sms_log('Откуда: ' . $a_settlement_data['settlement'] . '.');
+          sms_log($a_settlement_data['settlement']);
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
           sms_log('https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id']);
-          sms_log('comment.' . $a_ci['owner_id'] . '.' . $a_ci['post_id'] . '.' . $a_ci['comment_id']);
+          sms_log('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id']);
         } else {
           sms_log('https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id']);
-          sms_log('nested_comment.' . $a_ci['owner_id'] . '.' . $a_ci['post_id'] . '.' . $a_ci['parent_comment_id'] . '.' . $a_ci['comment_id']);
+          sms_log('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id']);
         }
 
         foreach ($a_patterns as $a_pi) {
@@ -47,7 +76,7 @@ function sms_db_analyze_data_wall_getcomments() {
           preg_match_all($a_pi, base64_decode($a_ci['text']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            sms_log('  Text: ' . $a_mi . '.');
+            sms_log('  Text: ' . $a_mi);
           }
         }
 
@@ -56,7 +85,7 @@ function sms_db_analyze_data_wall_getcomments() {
           preg_match_all($a_pi, base64_decode($a_ci['attachments']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            sms_log('  Attachments: ' . $a_mi . '.');
+            sms_log('  Attachments: ' . $a_mi);
           }
         }
 
@@ -391,6 +420,9 @@ function sms_watched_owners_wall_get() {
   }
 }
 
+$a_items_archived = file('private/items_archived.txt', FILE_IGNORE_NEW_LINES);
+$a_items_ignored = file('private/items_ignored.txt', FILE_IGNORE_NEW_LINES);
+$a_items_on_hold = file('private/items_on_hold.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/vor_obl_settlements.json'), true);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
