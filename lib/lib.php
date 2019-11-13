@@ -10,7 +10,66 @@ const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 10; //100 TODO
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 10; //100 TODO
 
 function sms_db_analyze_data_wall_get() {
-  /* TODO */
+  global $a_items_archived;
+  global $a_items_ignored;
+  global $a_items_on_hold;
+  global $a_patterns;
+  global $o_sqlite;
+
+  $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
+
+  while ($a_pi = $a_db_data_posts->fetchArray()) {
+    if (sms_settlement_check($a_pi['settlement_id'])) {
+      $a_db_user_data = sms_user_fetch_data($a_pi['from_id']);
+
+      if ($a_pi['from_id'] > 0) {
+        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_archived)) {
+          continue;
+        }
+
+        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_on_hold)) {
+          continue;
+        }
+
+        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_ignored)) {
+          continue;
+        }
+
+        $a_settlement_data = sms_settlement_fetch_data($a_pi['settlement_id']);
+        sms_log('********************************************************************************');
+        sms_log(base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']));
+
+        if ($a_settlement_data['district'] != '' ) {
+          sms_log($a_settlement_data['district'] . ', ' . $a_settlement_data['settlement']);
+        } else {
+          sms_log($a_settlement_data['settlement']);
+        }
+
+        sms_log('https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
+        sms_log('comment|' . $a_pi['owner_id'] . '|' . $a_pi['post_id']);
+
+        foreach ($a_patterns as $a_pattern) {
+          $a_matches = [];
+          preg_match_all($a_pattern, base64_decode($a_pi['text']), $a_matches);
+
+          foreach ($a_matches[0] as $a_mi) {
+            sms_log('  Text: ' . $a_mi);
+          }
+        }
+
+        foreach ($a_patterns as $a_pattern) {
+          $a_matches = [];
+          preg_match_all($a_pattern, base64_decode($a_pi['attachments']), $a_matches);
+
+          foreach ($a_matches[0] as $a_mi) {
+            sms_log('  Attachments: ' . $a_mi);
+          }
+        }
+
+        sms_log('********************************************************************************');
+      }
+    }
+  }
 }
 
 function sms_db_analyze_data_wall_getcomments() {
