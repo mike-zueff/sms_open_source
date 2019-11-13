@@ -14,4 +14,5 @@ if (!array_key_exists('a', $a_getopt)) {
   sms_db_posts_fetch_comments();
 }
 
-sms_db_analyze_data();
+sms_db_analyze_data_wall_get();
+sms_db_analyze_data_wall_getcomments();
