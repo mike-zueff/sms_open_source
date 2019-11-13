@@ -9,7 +9,12 @@ const I_NULL_VALUE = -1;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 10; //100 TODO
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 10; //100 TODO
 
-function sms_db_analyze_data() {
+function sms_db_analyze_data_wall_get() {
+  /* TODO */
+}
+
+function sms_db_analyze_data_wall_getcomments() {
+  global $a_patterns;
   global $o_sqlite;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
@@ -17,10 +22,10 @@ function sms_db_analyze_data() {
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
-      sms_log('********************************************************************************');
 
       if ($a_ci['from_id'] > 0) {
         $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
+        sms_log('********************************************************************************');
         sms_log('Имя: ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . '.');
 
         if ($a_settlement_data['district'] != '' ) {
@@ -28,15 +33,37 @@ function sms_db_analyze_data() {
         } else {
           sms_log('Откуда: ' . $a_settlement_data['settlement'] . '.');
         }
+
+        if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
+          sms_log('https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id']);
+          sms_log('comment.' . $a_ci['owner_id'] . '.' . $a_ci['post_id'] . '.' . $a_ci['comment_id']);
+        } else {
+          sms_log('https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id']);
+          sms_log('nested_comment.' . $a_ci['owner_id'] . '.' . $a_ci['post_id'] . '.' . $a_ci['parent_comment_id'] . '.' . $a_ci['comment_id']);
+        }
+
+        foreach ($a_patterns as $a_pi) {
+          $a_matches = [];
+          preg_match_all($a_pi, base64_decode($a_ci['text']), $a_matches);
+
+          foreach ($a_matches[0] as $a_mi) {
+            sms_log('  Text: ' . $a_mi . '.');
+          }
+        }
+
+        foreach ($a_patterns as $a_pi) {
+          $a_matches = [];
+          preg_match_all($a_pi, base64_decode($a_ci['attachments']), $a_matches);
+
+          foreach ($a_matches[0] as $a_mi) {
+            sms_log('  Attachments: ' . $a_mi . '.');
+          }
+        }
+
+        sms_log('********************************************************************************');
       }
     }
   }
-  /*
-        if ( preg_match($e_w_m, $resp_i['text']) != 0 ) {
-          echo 'https://vk.com/wall' . $bf . '_' . $resp_i['id'] . PHP_EOL;
-          echo 'GREP: ' . $e_w_m . PHP_EOL;
-        }
-  }*/
 }
 
 function sms_db_posts_fetch_comments() {
