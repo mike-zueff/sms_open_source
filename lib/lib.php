@@ -2,12 +2,11 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
-/* TODO Fix all limits. */
-const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 1;
-const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 1;
+const I_DATE_LIMIT_WALL_GET = 60 * 60 * 2 * 1; //24 * 100;
+const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 2 * 1; //24 * 100;
 const I_NULL_VALUE = -1;
-const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 10; //100 TODO
-const I_VK_API_WALL_GET_COUNT_DEFAULT = 10; //100 TODO
+const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 5; //100;
+const I_VK_API_WALL_GET_COUNT_DEFAULT = 5; //100;
 
 function sms_db_analyze_data_wall_get() {
   global $a_items_archived;
@@ -36,24 +35,27 @@ function sms_db_analyze_data_wall_get() {
         }
 
         $a_settlement_data = sms_settlement_fetch_data($a_pi['settlement_id']);
-        sms_log('********************************************************************************');
-        sms_log(base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']));
+        $need_for_log = false;
+        $sms_log_buffer = '';
+        $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
+        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
-          sms_log($a_settlement_data['district'] . ', ' . $a_settlement_data['settlement']);
+          $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
         } else {
-          sms_log($a_settlement_data['settlement']);
+          $sms_log_buffer .= $a_settlement_data['settlement'] . PHP_EOL;
         }
 
-        sms_log('https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
-        sms_log('comment|' . $a_pi['owner_id'] . '|' . $a_pi['post_id']);
+        $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
+        $sms_log_buffer .= 'comment|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
 
         foreach ($a_patterns as $a_pattern) {
           $a_matches = [];
           preg_match_all($a_pattern, base64_decode($a_pi['text']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            sms_log('  Text: ' . $a_mi);
+            $need_for_log = true;
+            $sms_log_buffer .= '  Text: ' . $a_mi . PHP_EOL;
           }
         }
 
@@ -62,11 +64,16 @@ function sms_db_analyze_data_wall_get() {
           preg_match_all($a_pattern, base64_decode($a_pi['attachments']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            sms_log('  Attachments: ' . $a_mi);
+            $need_for_log = true;
+            $sms_log_buffer .= '  Attachments: ' . $a_mi . PHP_EOL;
           }
         }
 
-        sms_log('********************************************************************************');
+        $sms_log_buffer .= '********************************************************************************';
+
+        if ($need_for_log) {
+          sms_log($sms_log_buffer);
+        }
       }
     }
   }
@@ -113,21 +120,23 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
-        sms_log('********************************************************************************');
-        sms_log(base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']));
+        $need_for_log = false;
+        $sms_log_buffer = '';
+        $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
+        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
-          sms_log($a_settlement_data['district'] . ', ' . $a_settlement_data['settlement']);
+          $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
         } else {
-          sms_log($a_settlement_data['settlement']);
+          $sms_log_buffer .= $a_settlement_data['settlement'] . PHP_EOL;
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
-          sms_log('https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id']);
-          sms_log('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id']);
+          $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . PHP_EOL;
+          $sms_log_buffer .= 'comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
         } else {
-          sms_log('https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id']);
-          sms_log('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id']);
+          $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id'] . PHP_EOL;
+          $sms_log_buffer .= 'nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
         }
 
         foreach ($a_patterns as $a_pi) {
@@ -135,7 +144,8 @@ function sms_db_analyze_data_wall_getcomments() {
           preg_match_all($a_pi, base64_decode($a_ci['text']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            sms_log('  Text: ' . $a_mi);
+            $need_for_log = true;
+            $sms_log_buffer .= '  Text: ' . $a_mi . PHP_EOL;
           }
         }
 
@@ -144,11 +154,16 @@ function sms_db_analyze_data_wall_getcomments() {
           preg_match_all($a_pi, base64_decode($a_ci['attachments']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            sms_log('  Attachments: ' . $a_mi);
+            $need_for_log = true;
+            $sms_log_buffer .= '  Attachments: ' . $a_mi . PHP_EOL;
           }
         }
 
-        sms_log('********************************************************************************');
+        $sms_log_buffer .= '********************************************************************************';
+
+        if ($need_for_log) {
+          sms_log($sms_log_buffer);
+        }
       }
     }
   }
@@ -472,7 +487,7 @@ function sms_watched_owners_wall_get() {
 
       $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
 
-      if ($b_need_for_break || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_DATE_LIMIT_WALL_GET) {
+      if ($b_need_for_break || empty($o_result['items']) || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_DATE_LIMIT_WALL_GET) {
         break;
       }
     } while (true);
@@ -483,7 +498,7 @@ $a_items_archived = file('private/items_archived.txt', FILE_IGNORE_NEW_LINES);
 $a_items_ignored = file('private/items_ignored.txt', FILE_IGNORE_NEW_LINES);
 $a_items_on_hold = file('private/items_on_hold.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
-$a_settlements = json_decode(file_get_contents('data/vor_obl_settlements.json'), true);
+$a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
 $o_vk_api_client = new VK\Client\VKApiClient();
 $r_log_file = fopen('data/log.txt', 'w');
