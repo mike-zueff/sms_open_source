@@ -2,8 +2,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
-const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 4;
-const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 4;
+const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 2;
+const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 2;
 const I_NULL_VALUE = -1;
 const I_SLEEP_TIME = 1;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
