@@ -2,11 +2,12 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
-const I_DATE_LIMIT_WALL_GET = 60 * 60 * 2 * 1; //24 * 100;
-const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 2 * 1; //24 * 100;
+const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 4;
+const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 4;
 const I_NULL_VALUE = -1;
-const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 5; //100;
-const I_VK_API_WALL_GET_COUNT_DEFAULT = 5; //100;
+const I_SLEEP_TIME = 1;
+const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
+const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_db_analyze_data_wall_get() {
   global $a_items_archived;
@@ -376,6 +377,7 @@ function sms_vk_api_user_get($i_user_id, $s_fields) {
     return null;
   }
 
+  sleep(I_SLEEP_TIME);
   sms_debug('user.get | ' . $i_user_id . ' | ' . $s_fields);
 
   try {
@@ -394,6 +396,7 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
   global $o_vk_api_client;
   global $s_vk_api_token;
 
+  sleep(I_SLEEP_TIME);
   sms_debug('wall.get | ' . $i_owner_id . ' | ' . $i_offset);
 
   try {
@@ -413,6 +416,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
   global $o_vk_api_client;
   global $s_vk_api_token;
 
+  sleep(I_SLEEP_TIME);
   sms_debug('wall.getcomments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
 
   $a_getcomments = [
