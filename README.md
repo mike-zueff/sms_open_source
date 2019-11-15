@@ -50,6 +50,10 @@ echo "nested_comment|OWNER_ID_1|POST_ID_1|THREAD_ID_1|COMMENT_ID_1" >> private/i
 echo "nested_comment|OWNER_ID_2|POST_ID_2|THREAD_ID_2|COMMENT_ID_2" >> private/items_ignored.txt
 echo "nested_comment|OWNER_ID_3|POST_ID_3|THREAD_ID_3|COMMENT_ID_3" >> private/items_ignored.txt
 
+echo "all_comments_under|OWNER_ID_1|POST_ID_1" >> private/items_ignored.txt
+echo "all_comments_under|OWNER_ID_2|POST_ID_2" >> private/items_ignored.txt
+echo "all_comments_under|OWNER_ID_3|POST_ID_3" >> private/items_ignored.txt
+
 ./sms.php
 vim -o data/log.txt private/items_{on_hold,archived,ignored}.txt
 ./sms.php -a
