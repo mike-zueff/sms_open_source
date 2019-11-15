@@ -59,6 +59,7 @@ vim -o data/log.txt private/items_{on_hold,archived,ignored}.txt
 ./sms.php -a
 vim -o data/log.txt private/items_{on_hold,archived,ignored}.txt
 ./sms.php -a
+cp data/sms_db.sqlite{,_backup_REVISION}
 ./sms.php
 ```
 
