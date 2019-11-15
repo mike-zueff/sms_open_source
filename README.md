@@ -58,6 +58,8 @@ echo "all_comments_under|OWNER_ID_3|POST_ID_3" >> private/items_ignored.txt
 vim -o private/items_{ignored,on_hold,archived}.txt
 ./sms.php -a                  
 vim -o private/items_{ignored,on_hold,archived}.txt
+./sms.php -a                  
+vim -o private/items_{ignored,on_hold,archived}.txt
 ./sms.php -a
 cp data/sms_db.sqlite{,_backup_REVISION}
 ./sms.php
