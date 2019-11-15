@@ -2,10 +2,10 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 const B_DEBUG_ENABLED = true;
-const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 2;
-const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 2;
+const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 4;
+const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 4;
 const I_NULL_VALUE = -1;
-const I_SLEEP_TIME = 1;
+const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
@@ -94,6 +94,10 @@ function sms_db_analyze_data_wall_getcomments() {
       $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
 
       if ($a_ci['from_id'] > 0) {
+        if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_items_ignored)) {
+          continue;
+        }
+
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
           if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_archived)) {
             continue;
@@ -135,9 +139,11 @@ function sms_db_analyze_data_wall_getcomments() {
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . PHP_EOL;
           $sms_log_buffer .= 'comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
+          $sms_log_buffer .= 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         } else {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id'] . PHP_EOL;
           $sms_log_buffer .= 'nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
+          $sms_log_buffer .= 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         }
 
         foreach ($a_patterns as $a_pi) {
@@ -377,7 +383,7 @@ function sms_vk_api_user_get($i_user_id, $s_fields) {
     return null;
   }
 
-  sleep(I_SLEEP_TIME);
+  usleep(I_USLEEP_TIME);
   sms_debug('user.get | ' . $i_user_id . ' | ' . $s_fields);
 
   try {
@@ -396,7 +402,7 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
   global $o_vk_api_client;
   global $s_vk_api_token;
 
-  sleep(I_SLEEP_TIME);
+  usleep(I_USLEEP_TIME);
   sms_debug('wall.get | ' . $i_owner_id . ' | ' . $i_offset);
 
   try {
@@ -416,7 +422,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
   global $o_vk_api_client;
   global $s_vk_api_token;
 
-  sleep(I_SLEEP_TIME);
+  usleep(I_USLEEP_TIME);
   sms_debug('wall.getcomments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
 
   $a_getcomments = [
