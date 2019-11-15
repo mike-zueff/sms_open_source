@@ -339,6 +339,7 @@ function sms_user_fetch_data($i_user_id) {
 
   $a_db_data_settlements = $o_sqlite->query("SELECT * FROM users WHERE user_id = $i_user_id");
   $a_db_user_data = [];
+  $b_need_for_commit = false;
   $i_settlement_id = I_NULL_VALUE;
   $s_first_name = '';
   $s_last_name = '';
@@ -357,6 +358,7 @@ function sms_user_fetch_data($i_user_id) {
     $o_result = sms_vk_api_user_get($i_user_id, 'city');
 
     if ($o_result != null) {
+      $b_need_for_commit = true;
       $s_first_name = base64_encode($o_result[0]['first_name']);
       $s_last_name = base64_encode($o_result[0]['last_name']);
 
@@ -364,9 +366,13 @@ function sms_user_fetch_data($i_user_id) {
         $i_settlement_id =  $o_result[0]['city']['id'];
       }
     }
+  } else {
+    $b_need_for_commit = true;
   }
 
-  $o_sqlite->exec("INSERT INTO users(first_name, last_name, settlement_id, user_id) VALUES('$s_first_name', '$s_last_name', $i_settlement_id, $i_user_id)");
+  if ($b_need_for_commit) {
+    $o_sqlite->exec("INSERT INTO users(first_name, last_name, settlement_id, user_id) VALUES('$s_first_name', '$s_last_name', $i_settlement_id, $i_user_id)");
+  }
 
   $a_db_user_data['first_name'] = $s_first_name;
   $a_db_user_data['last_name'] = $s_last_name;
