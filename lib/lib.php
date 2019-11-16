@@ -17,7 +17,7 @@ function sms_db_analyze_data_wall_get() {
   global $o_sqlite;
 
   $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
-  $i_counter = 0;
+  $i_counter = 1;
 
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
@@ -53,7 +53,7 @@ function sms_db_analyze_data_wall_get() {
         }
 
         $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
-        $sms_log_buffer .= 'comment|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
+        $sms_log_buffer .= 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
 
         foreach ($a_patterns as $a_pattern) {
           $a_matches = [];
@@ -94,7 +94,7 @@ function sms_db_analyze_data_wall_getcomments() {
   global $o_sqlite;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
-  $i_counter = 0;
+  $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'])) {
