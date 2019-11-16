@@ -54,11 +54,15 @@ echo "all_comments_under|OWNER_ID_1|POST_ID_1" >> private/items_ignored.txt
 echo "all_comments_under|OWNER_ID_2|POST_ID_2" >> private/items_ignored.txt
 echo "all_comments_under|OWNER_ID_3|POST_ID_3" >> private/items_ignored.txt
 
+echo "owner|OWNER_ID_1" >> private/items_ignored.txt
+echo "owner|OWNER_ID_2" >> private/items_ignored.txt
+echo "owner|OWNER_ID_3" >> private/items_ignored.txt
+
 ./sms.php
 vim -o private/items_{ignored,on_hold,archived}.txt
-./sms.php -a                  
+./sms.php -a
 vim -o private/items_{ignored,on_hold,archived}.txt
-./sms.php -a                  
+./sms.php -a
 vim -o private/items_{ignored,on_hold,archived}.txt
 ./sms.php -a
 cp data/sms_db.sqlite{,_backup_REVISION}

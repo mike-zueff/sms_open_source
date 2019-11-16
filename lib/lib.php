@@ -17,12 +17,17 @@ function sms_db_analyze_data_wall_get() {
   global $o_sqlite;
 
   $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
+  $i_counter = 0;
 
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
       $a_db_user_data = sms_user_fetch_data($a_pi['from_id']);
 
       if ($a_pi['from_id'] > 0) {
+        if (in_array('owner|' . $a_pi['owner_id'], $a_items_ignored)) {
+          continue;
+        }
+
         if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_archived)) {
           continue;
         }
@@ -39,7 +44,7 @@ function sms_db_analyze_data_wall_get() {
         $need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
-        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . ': ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
@@ -74,6 +79,7 @@ function sms_db_analyze_data_wall_get() {
 
         if ($need_for_log) {
           sms_log($sms_log_buffer);
+          ++$i_counter;
         }
       }
     }
@@ -88,12 +94,17 @@ function sms_db_analyze_data_wall_getcomments() {
   global $o_sqlite;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
+  $i_counter = 0;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
 
       if ($a_ci['from_id'] > 0) {
+        if (in_array('owner|' . $a_ci['owner_id'], $a_items_ignored)) {
+          continue;
+        }
+
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_items_ignored)) {
           continue;
         }
@@ -128,7 +139,7 @@ function sms_db_analyze_data_wall_getcomments() {
         $need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
-        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . ': ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
@@ -170,6 +181,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($need_for_log) {
           sms_log($sms_log_buffer);
+          ++$i_counter;
         }
       }
     }
