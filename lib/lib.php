@@ -188,6 +188,40 @@ function sms_db_analyze_data_wall_getcomments() {
   }
 }
 
+function sms_db_delete_obsolete_comments() {
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $o_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
+
+  while ($a_ci = $o_db_data_comments->fetchArray()) {
+    if ($a_ci['date'] < $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS) {
+      $i_current_owner_id = $a_ci['owner_id'];
+      $i_current_post_id = $a_ci['post_id'];
+      $i_current_parent_comment_id = $a_ci['parent_comment_id'];
+      $i_current_comment_id = $a_ci['comment_id'];
+
+      $o_sqlite->exec("DELETE FROM wall_getcomments WHERE owner_id = $i_current_owner_id AND post_id = $i_current_post_id AND parent_comment_id = $i_current_parent_comment_id AND comment_id = $i_current_comment_id");
+    }
+  }
+}
+
+function sms_db_delete_obsolete_posts() {
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $o_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
+
+  while ($a_pi = $o_db_data_posts->fetchArray()) {
+    if ($a_pi['date'] < $i_timestamp - I_DATE_LIMIT_WALL_GET) {
+      $i_current_owner_id = $a_pi['owner_id'];
+      $i_current_post_id = $a_pi['post_id'];
+
+      $o_sqlite->exec("DELETE FROM wall_get WHERE owner_id = $i_current_owner_id AND post_id = $i_current_post_id");
+    }
+  }
+}
+
 function sms_db_posts_fetch_comments() {
   global $a_items_ignored;
   global $i_timestamp;
