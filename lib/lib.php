@@ -189,6 +189,7 @@ function sms_db_analyze_data_wall_getcomments() {
 }
 
 function sms_db_posts_fetch_comments() {
+  global $a_items_ignored;
   global $i_timestamp;
   global $o_sqlite;
 
@@ -196,6 +197,10 @@ function sms_db_posts_fetch_comments() {
 
   while ($a_pi = $o_db_data_posts->fetchArray()) {
     $i_offset = 0;
+
+    if (in_array('owner|' . $a_pi['owner_id'], $a_items_ignored)) {
+      continue;
+    }
 
     if ($a_pi['date'] < $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS) {
       continue;
