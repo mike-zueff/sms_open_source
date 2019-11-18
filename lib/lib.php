@@ -10,7 +10,6 @@ const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_db_analyze_data_wall_get() {
-  global $a_items_archived;
   global $a_items_ignored;
   global $a_items_on_hold;
   global $a_patterns;
@@ -25,10 +24,6 @@ function sms_db_analyze_data_wall_get() {
 
       if ($a_pi['from_id'] > 0) {
         if (in_array('owner|' . $a_pi['owner_id'], $a_items_ignored)) {
-          continue;
-        }
-
-        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_archived)) {
           continue;
         }
 
@@ -87,7 +82,6 @@ function sms_db_analyze_data_wall_get() {
 }
 
 function sms_db_analyze_data_wall_getcomments() {
-  global $a_items_archived;
   global $a_items_ignored;
   global $a_items_on_hold;
   global $a_patterns;
@@ -110,10 +104,6 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
-          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_archived)) {
-            continue;
-          }
-
           if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_on_hold)) {
             continue;
           }
@@ -122,10 +112,6 @@ function sms_db_analyze_data_wall_getcomments() {
             continue;
           }
         } else {
-          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_archived)) {
-            continue;
-          }
-
           if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_on_hold)) {
             continue;
           }
@@ -192,34 +178,18 @@ function sms_db_delete_obsolete_comments() {
   global $i_timestamp;
   global $o_sqlite;
 
-  $o_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
+  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS;
 
-  while ($a_ci = $o_db_data_comments->fetchArray()) {
-    if ($a_ci['date'] < $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS) {
-      $i_current_owner_id = $a_ci['owner_id'];
-      $i_current_post_id = $a_ci['post_id'];
-      $i_current_parent_comment_id = $a_ci['parent_comment_id'];
-      $i_current_comment_id = $a_ci['comment_id'];
-
-      $o_sqlite->exec("DELETE FROM wall_getcomments WHERE owner_id = $i_current_owner_id AND post_id = $i_current_post_id AND parent_comment_id = $i_current_parent_comment_id AND comment_id = $i_current_comment_id");
-    }
-  }
+  $o_sqlite->exec("DELETE FROM wall_getcomments WHERE date < $i_current_date_limit");
 }
 
 function sms_db_delete_obsolete_posts() {
   global $i_timestamp;
   global $o_sqlite;
 
-  $o_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
+  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS;
 
-  while ($a_pi = $o_db_data_posts->fetchArray()) {
-    if ($a_pi['date'] < $i_timestamp - I_DATE_LIMIT_WALL_GET) {
-      $i_current_owner_id = $a_pi['owner_id'];
-      $i_current_post_id = $a_pi['post_id'];
-
-      $o_sqlite->exec("DELETE FROM wall_get WHERE owner_id = $i_current_owner_id AND post_id = $i_current_post_id");
-    }
-  }
+  $o_sqlite->exec("DELETE FROM wall_get WHERE date < $i_current_date_limit");
 }
 
 function sms_db_posts_fetch_comments() {
@@ -269,7 +239,7 @@ function sms_db_posts_fetch_comments() {
             $a_db_user_data = sms_user_fetch_data($i_db_from_id);
             $i_db_settlement_id = $a_db_user_data['settlement_id'];
 
-            $o_sqlite->exec("INSERT INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_comment_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_parent_comment_id, $i_db_post_id, '$s_db_text')");
+            $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_comment_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_parent_comment_id, $i_db_post_id, '$s_db_text')");
 
             if ($o_ri['thread']['count'] > 0) {
               do {
@@ -301,7 +271,7 @@ function sms_db_posts_fetch_comments() {
                       $i_db_settlement_id_nested = $a_db_user_data_nested['settlement_id'];
 
                       if (sms_settlement_check($i_db_settlement_id_nested)) {
-                        $o_sqlite->exec("INSERT INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_settlement_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
+                        $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_settlement_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
                       }
                     }
                   }
@@ -422,7 +392,7 @@ function sms_user_fetch_data($i_user_id) {
   }
 
   if ($b_need_for_commit) {
-    $o_sqlite->exec("INSERT INTO users(first_name, last_name, settlement_id, user_id) VALUES('$s_first_name', '$s_last_name', $i_settlement_id, $i_user_id)");
+    $o_sqlite->exec("REPLACE INTO users(first_name, last_name, settlement_id, user_id) VALUES('$s_first_name', '$s_last_name', $i_settlement_id, $i_user_id)");
   }
 
   $a_db_user_data['first_name'] = $s_first_name;
@@ -544,7 +514,7 @@ function sms_watched_owners_wall_get() {
             $a_db_user_data = sms_user_fetch_data($i_db_from_id);
             $i_db_settlement_id = $a_db_user_data['settlement_id'];
 
-            $o_sqlite->exec("INSERT INTO wall_get(attachments, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
+            $o_sqlite->exec("REPLACE INTO wall_get(attachments, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
           }
         }
       } else {
@@ -561,7 +531,6 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_items_archived = file('private/items_archived.txt', FILE_IGNORE_NEW_LINES);
 $a_items_ignored = file('private/items_ignored.txt', FILE_IGNORE_NEW_LINES);
 $a_items_on_hold = file('private/items_on_hold.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
