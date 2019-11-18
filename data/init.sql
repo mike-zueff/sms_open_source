@@ -1,4 +1,5 @@
 CREATE TABLE users (
+  id integer primary key,
   first_name text,
   last_name text,
   settlement_id integer,
@@ -6,6 +7,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE wall_get (
+  id integer primary key,
   attachments text,
   date integer,
   from_id integer,
@@ -16,6 +18,7 @@ CREATE TABLE wall_get (
 );
 
 CREATE TABLE wall_getcomments (
+  id integer primary key,
   attachments text,
   comment_id integer,
   date integer,
