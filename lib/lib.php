@@ -178,7 +178,7 @@ function sms_db_delete_obsolete_comments() {
   global $i_timestamp;
   global $o_sqlite;
 
-  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS;
+  $i_current_date_limit = round($i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS * 2);
 
   $o_sqlite->exec("DELETE FROM wall_getcomments WHERE date < $i_current_date_limit");
 }
@@ -187,7 +187,7 @@ function sms_db_delete_obsolete_posts() {
   global $i_timestamp;
   global $o_sqlite;
 
-  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS;
+  $i_current_date_limit = round($i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS * 2);
 
   $o_sqlite->exec("DELETE FROM wall_get WHERE date < $i_current_date_limit");
 }
