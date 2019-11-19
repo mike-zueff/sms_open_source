@@ -11,7 +11,6 @@ const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_db_analyze_data_wall_get() {
   global $a_items_ignored;
-  global $a_items_on_hold;
   global $a_patterns;
   global $o_sqlite;
 
@@ -24,10 +23,6 @@ function sms_db_analyze_data_wall_get() {
 
       if ($a_pi['from_id'] > 0) {
         if (in_array('owner|' . $a_pi['owner_id'], $a_items_ignored)) {
-          continue;
-        }
-
-        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_on_hold)) {
           continue;
         }
 
@@ -83,7 +78,6 @@ function sms_db_analyze_data_wall_get() {
 
 function sms_db_analyze_data_wall_getcomments() {
   global $a_items_ignored;
-  global $a_items_on_hold;
   global $a_patterns;
   global $o_sqlite;
 
@@ -104,18 +98,10 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
-          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_on_hold)) {
-            continue;
-          }
-
           if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_ignored)) {
             continue;
           }
         } else {
-          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_on_hold)) {
-            continue;
-          }
-
           if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_ignored)) {
             continue;
           }
@@ -531,8 +517,7 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_items_ignored = file('private/items_ignored.txt', FILE_IGNORE_NEW_LINES);
-$a_items_on_hold = file('private/items_on_hold.txt', FILE_IGNORE_NEW_LINES);
+$a_items_ignored = file('private/ignored_items.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
