@@ -10,7 +10,7 @@ const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_db_analyze_data_wall_get() {
-  global $a_items_ignored;
+  global $a_ignored_items;
   global $a_patterns;
   global $o_sqlite;
 
@@ -22,11 +22,11 @@ function sms_db_analyze_data_wall_get() {
       $a_db_user_data = sms_user_fetch_data($a_pi['from_id']);
 
       if ($a_pi['from_id'] > 0) {
-        if (in_array('owner|' . $a_pi['owner_id'], $a_items_ignored)) {
+        if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
           continue;
         }
 
-        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_items_ignored)) {
+        if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_ignored_items)) {
           continue;
         }
 
@@ -77,7 +77,7 @@ function sms_db_analyze_data_wall_get() {
 }
 
 function sms_db_analyze_data_wall_getcomments() {
-  global $a_items_ignored;
+  global $a_ignored_items;
   global $a_patterns;
   global $o_sqlite;
 
@@ -89,20 +89,20 @@ function sms_db_analyze_data_wall_getcomments() {
       $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
 
       if ($a_ci['from_id'] > 0) {
-        if (in_array('owner|' . $a_ci['owner_id'], $a_items_ignored)) {
+        if (in_array('owner|' . $a_ci['owner_id'], $a_ignored_items)) {
           continue;
         }
 
-        if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_items_ignored)) {
+        if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
           continue;
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
-          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_items_ignored)) {
+          if (in_array('comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'], $a_ignored_items)) {
             continue;
           }
         } else {
-          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_items_ignored)) {
+          if (in_array('nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'], $a_ignored_items)) {
             continue;
           }
         }
@@ -179,7 +179,7 @@ function sms_db_delete_obsolete_posts() {
 }
 
 function sms_db_posts_fetch_comments() {
-  global $a_items_ignored;
+  global $a_ignored_items;
   global $i_timestamp;
   global $o_sqlite;
 
@@ -188,7 +188,7 @@ function sms_db_posts_fetch_comments() {
   while ($a_pi = $o_db_data_posts->fetchArray()) {
     $i_offset = 0;
 
-    if (in_array('owner|' . $a_pi['owner_id'], $a_items_ignored)) {
+    if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
       continue;
     }
 
@@ -517,7 +517,7 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_items_ignored = file('private/ignored_items.txt', FILE_IGNORE_NEW_LINES);
+$a_ignored_items = file('private/ignored_items.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
