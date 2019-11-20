@@ -183,10 +183,14 @@ function sms_db_posts_fetch_comments() {
   global $i_timestamp;
   global $o_sqlite;
 
+  $i_db_data_posts_counter = 0;
   $o_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
 
   while ($a_pi = $o_db_data_posts->fetchArray()) {
     $i_offset = 0;
+
+    ++$i_db_data_posts_counter;
+    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $o_db_data_posts->numRows() . ')...');
 
     if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
       continue;
@@ -262,7 +266,7 @@ function sms_db_posts_fetch_comments() {
                     }
                   }
                 } else {
-                  sms_echo('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id . '?reply=' . $i_db_comment_id);
+                  sms_debug('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id . '?reply=' . $i_db_comment_id);
                   break;
                 }
 
@@ -272,7 +276,7 @@ function sms_db_posts_fetch_comments() {
           }
         }
       } else {
-        sms_echo('error, wall.getcomments, https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
+        sms_debug('error, wall.getcomments, https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
         break;
       }
 
@@ -465,9 +469,13 @@ function sms_watched_owners_wall_get() {
   global $o_sqlite;
 
   $a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
+  $i_watched_owners_counter = 0;
 
   foreach ($a_watched_owners as $s_wo) {
     $i_offset = 0;
+
+    ++$i_watched_owners_counter;
+    sms_echo('Processing walls (' . $i_watched_owners_counter . ' of ' . count($a_watched_owners) . ')...');
 
     do {
       $b_need_for_break = false;
@@ -504,7 +512,7 @@ function sms_watched_owners_wall_get() {
           }
         }
       } else {
-        sms_echo('error, wall.get, https://vk.com/wall' . $s_wo . '?own=1&offset=' . $i_offset);
+        sms_debug('error, wall.get, https://vk.com/wall' . $s_wo . '?own=1&offset=' . $i_offset);
         break;
       }
 
