@@ -194,13 +194,15 @@ function sms_db_posts_fetch_comments() {
   global $o_sqlite;
 
   $i_db_data_posts_counter = 0;
+  $o_db_data_rows = $o_sqlite->query('SELECT * FROM wall_get');
+  $i_db_data_rows_count = sms_db_get_rows_count($o_db_data_rows);
   $o_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
 
   while ($a_pi = $o_db_data_posts->fetchArray()) {
     $i_offset = 0;
 
     ++$i_db_data_posts_counter;
-    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . sms_db_get_rows_count($o_db_data_posts) . ')...');
+    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $i_db_data_rows_count . ')...');
 
     if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
       continue;
