@@ -178,6 +178,16 @@ function sms_db_delete_obsolete_posts() {
   $o_sqlite->exec("DELETE FROM wall_get WHERE date < $i_current_date_limit");
 }
 
+function sms_db_get_rows_count($o_query_result) {
+  $i_rows_counter = 0;
+
+  while ($a_qi = $o_query_result->fetchArray()) {
+    ++$i_rows_counter;
+  }
+
+  return $i_rows_counter;
+}
+
 function sms_db_posts_fetch_comments() {
   global $a_ignored_items;
   global $i_timestamp;
@@ -190,7 +200,7 @@ function sms_db_posts_fetch_comments() {
     $i_offset = 0;
 
     ++$i_db_data_posts_counter;
-    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $o_db_data_posts->numRows() . ')...');
+    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . sms_db_get_rows_count($o_db_data_posts) . ')...');
 
     if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
       continue;
