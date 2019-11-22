@@ -19,8 +19,6 @@ function sms_db_analyze_data_wall_get() {
 
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
-      $a_db_user_data = sms_user_fetch_data($a_pi['from_id']);
-
       if ($a_pi['from_id'] > 0) {
         if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
           continue;
@@ -30,6 +28,7 @@ function sms_db_analyze_data_wall_get() {
           continue;
         }
 
+        $a_db_user_data = sms_user_fetch_data($a_pi['from_id']);
         $a_settlement_data = sms_settlement_fetch_data($a_pi['settlement_id']);
         $need_for_log = false;
         $sms_log_buffer = '';
@@ -86,8 +85,6 @@ function sms_db_analyze_data_wall_getcomments() {
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'])) {
-      $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
-
       if ($a_ci['from_id'] > 0) {
         if (in_array('owner|' . $a_ci['owner_id'], $a_ignored_items)) {
           continue;
@@ -107,6 +104,7 @@ function sms_db_analyze_data_wall_getcomments() {
           }
         }
 
+        $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
         $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
         $need_for_log = false;
         $sms_log_buffer = '';
@@ -324,7 +322,7 @@ function sms_log($s_message) {
 function sms_settlement_check($i_settlement_id) {
   global $a_settlements;
 
-  if($i_settlement_id == I_NULL_VALUE) {
+  if($i_settlement_id < 0) {
     return false;
   }
 
@@ -396,8 +394,6 @@ function sms_user_fetch_data($i_user_id) {
         $i_settlement_id =  $o_result[0]['city']['id'];
       }
     }
-  } else {
-    $b_need_for_commit = true;
   }
 
   if ($b_need_for_commit) {
@@ -428,6 +424,8 @@ function sms_vk_api_user_get($i_user_id, $s_fields) {
       'user_ids' => $i_user_id,
     ]);
 
+    sms_debug('done');
+
     return $o_response;
   } catch (Exception $e) {
     return null;
@@ -447,6 +445,8 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
       'offset' => $i_offset,
       'owner_id' => $i_owner_id,
     ));
+
+    sms_debug('done');
 
     return $o_response;
   } catch (Exception $e) {
@@ -476,6 +476,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
 
   try {
     $o_response = $o_vk_api_client->wall()->getComments($s_vk_api_token, $a_getcomments);
+    sms_debug('done');
 
     return $o_response;
   } catch (Exception $e) {
