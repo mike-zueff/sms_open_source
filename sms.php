@@ -14,6 +14,7 @@ if (!array_key_exists('a', $a_getopt)) {
   sms_db_delete_obsolete_comments();
   sms_watched_owners_wall_get();
   sms_db_posts_fetch_comments();
+  sms_db_vacuum();
 }
 
 sms_db_analyze_data_wall_get();

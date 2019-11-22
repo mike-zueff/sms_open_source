@@ -298,6 +298,12 @@ function sms_db_posts_fetch_comments() {
   }
 }
 
+function sms_db_vacuum() {
+  global $o_sqlite;
+
+  $o_sqlite->exec("VACUUM");
+}
+
 function sms_debug($s_message) {
   if (B_DEBUG_ENABLED) {
     echo '  ' . $s_message . PHP_EOL;
