@@ -279,7 +279,7 @@ function sms_db_posts_fetch_comments() {
                     }
                   }
                 } else {
-                  sms_debug('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id . '?reply=' . $i_db_comment_id);
+                  sms_debug('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id);
                   break;
                 }
 
