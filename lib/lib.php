@@ -200,16 +200,12 @@ function sms_db_posts_fetch_comments() {
     $i_offset = 0;
 
     ++$i_db_data_posts_counter;
+    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $i_db_data_rows_count . ')...');
 
     if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
+      sms_echo('Skipping...');
       continue;
     }
-
-    if ($a_pi['date'] < $i_timestamp - I_DATE_LIMIT_WALL_GETCOMMENTS) {
-      continue;
-    }
-
-    sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $i_db_data_rows_count . ')...');
 
     do {
       $b_need_for_break = false;
