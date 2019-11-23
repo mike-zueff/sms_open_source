@@ -505,7 +505,7 @@ function sms_watched_owners_wall_get() {
           $i_db_owner_id = $o_ri['owner_id'];
           $i_db_post_id = $o_ri['id'];
 
-          if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id") != null) {
+          if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
             if (!array_key_exists('is_pinned', $o_ri)) {
               $b_need_for_break = true;
 
