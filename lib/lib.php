@@ -204,6 +204,7 @@ function sms_db_posts_fetch_comments() {
 
     if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
       sms_echo('Skipping...');
+
       continue;
     }
 
@@ -274,6 +275,7 @@ function sms_db_posts_fetch_comments() {
                   }
                 } else {
                   sms_debug('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id);
+
                   break;
                 }
 
@@ -284,6 +286,7 @@ function sms_db_posts_fetch_comments() {
         }
       } else {
         sms_debug('error, wall.getcomments, https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
+
         break;
       }
 
@@ -512,6 +515,15 @@ function sms_watched_owners_wall_get() {
             }
           } else {
             $i_db_date = $o_ri['date'];
+
+            if (!array_key_exists('is_pinned', $o_ri)) {
+              if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
+                $b_need_for_break = true;
+
+                break;
+              }
+            }
+
             $i_db_from_id = $o_ri['from_id'];
             $s_db_text = base64_encode($o_ri['text']);
 
@@ -529,6 +541,7 @@ function sms_watched_owners_wall_get() {
         }
       } else {
         sms_debug('error, wall.get, https://vk.com/wall' . $s_wo . '?own=1&offset=' . $i_offset);
+
         break;
       }
 
