@@ -72,4 +72,4 @@ vim -O private/{ignored_items,email}.txt
 ## Credits
 Author: Mike Zueff
 
-Email: mike.zueff [at] gmail.com
+Email: mike.zueff [at] gmail [dot] com
