@@ -60,11 +60,11 @@ echo "owner|OWNER_ID_3" >> private/ignored_items.txt
 
 ./sms.php
 cp data/sms_db.sqlite{,_backup_REVISION}
-vim -O private/{ignored_items,email}.txt
+vim -O private/{patterns,ignored_items,email}.txt
 ./sms.php -a
-vim -O private/{ignored_items,email}.txt
+vim -O private/{patterns,ignored_items,email}.txt
 ./sms.php -a
-vim -O private/{ignored_items,email}.txt
+vim -O private/{patterns,ignored_items,email}.txt
 ./sms.php -a
 ./sms.php
 ```
