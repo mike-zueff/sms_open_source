@@ -34,9 +34,9 @@ echo "USER_1" >> private/watched_owners.txt
 echo "USER_2" >> private/watched_owners.txt
 echo "USER_3" >> private/watched_owners.txt
 
-echo "/PATTERN_1/i" > private/patterns.txt
-echo "/PATTERN_2/i" >> private/patterns.txt
-echo "/PATTERN_3/i" >> private/patterns.txt
+echo "/PATTERN_1/iu" > private/patterns.txt
+echo "/PATTERN_2/iu" >> private/patterns.txt
+echo "/PATTERN_3/iu" >> private/patterns.txt
 
 echo "post|OWNER_ID_1|POST_ID_1" > private/ignored_items.txt
 echo "post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
