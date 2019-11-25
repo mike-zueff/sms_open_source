@@ -416,6 +416,7 @@ function sms_vk_api_user_get($i_user_id, $s_fields) {
 
   usleep(I_USLEEP_TIME);
   sms_debug('user.get | ' . $i_user_id . ' | ' . $s_fields);
+  sms_debug('https://vk.com/id' . $i_user_id);
 
   try {
     $o_response = $o_vk_api_client->users()->get($s_vk_api_token, [
@@ -437,6 +438,7 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
 
   usleep(I_USLEEP_TIME);
   sms_debug('wall.get | ' . $i_owner_id . ' | ' . $i_offset);
+  sms_debug('https://vk.com/wall' . $i_owner_id . '?own=1');
 
   try {
     $o_response = $o_vk_api_client->wall()->get($s_vk_api_token, array(
@@ -459,6 +461,12 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
 
   usleep(I_USLEEP_TIME);
   sms_debug('wall.getcomments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
+
+  if ($i_comment_id == I_NULL_VALUE) {
+    sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id);
+  } else {
+    sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id . '?reply=' . $i_comment_id);
+  }
 
   $a_getcomments = [
     'count' => I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT,
@@ -540,7 +548,7 @@ function sms_watched_owners_wall_get() {
           }
         }
       } else {
-        sms_debug('error, wall.get, https://vk.com/wall' . $s_wo . '?own=1&offset=' . $i_offset);
+        sms_debug('error, wall.get, ' . $i_offset . ', https://vk.com/wall' . $s_wo . '?own=1');
 
         break;
       }
