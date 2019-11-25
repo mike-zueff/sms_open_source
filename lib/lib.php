@@ -213,7 +213,7 @@ function sms_db_posts_fetch_comments() {
       $o_result = sms_vk_api_wall_getcomments($a_pi['owner_id'], $a_pi['post_id'], $i_offset, I_NULL_VALUE);
 
       if ($o_result != null) {
-        if (empty($o_result['items'])) {
+        if (empty($o_result['items']) || count($o_result['items']) < I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT) {
           $b_need_for_break = true;
         }
 
@@ -245,7 +245,7 @@ function sms_db_posts_fetch_comments() {
                 $o_result_nested = sms_vk_api_wall_getcomments($a_pi['owner_id'], $a_pi['post_id'], $i_offset_nested, $i_db_comment_id);
 
                 if ($o_result_nested != null) {
-                  if (empty($o_result_nested['items'])) {
+                  if (empty($o_result_nested['items']) || count($o_result_nested['items']) < I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT) {
                     $b_need_for_break_nested = true;
                   }
 
