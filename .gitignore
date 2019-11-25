@@ -3,6 +3,7 @@ composer.lock
 data/log.txt
 data/sms_db.sqlite
 data/sms_db.sqlite-journal
-data/sms_db.sqlite_backup_*
+data/sms_db.sqlite_backup_1
+data/sms_db.sqlite_backup_2
 private
 vendor
