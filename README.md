@@ -38,25 +38,25 @@ echo "/PATTERN_1/iu" > private/patterns.txt
 echo "/PATTERN_2/iu" >> private/patterns.txt
 echo "/PATTERN_3/iu" >> private/patterns.txt
 
-echo "post|OWNER_ID_1|POST_ID_1" > private/ignored_items.txt
-echo "post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
-echo "post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|post|OWNER_ID_1|POST_ID_1" > private/ignored_items.txt
+echo "@YYYY_MM_DD|post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 
-echo "comment|OWNER_ID_1|POST_ID_1|COMMENT_ID_1" >> private/ignored_items.txt
-echo "comment|OWNER_ID_2|POST_ID_2|COMMENT_ID_2" >> private/ignored_items.txt
-echo "comment|OWNER_ID_3|POST_ID_3|COMMENT_ID_3" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|comment|OWNER_ID_1|POST_ID_1|COMMENT_ID_1" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|comment|OWNER_ID_2|POST_ID_2|COMMENT_ID_2" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|comment|OWNER_ID_3|POST_ID_3|COMMENT_ID_3" >> private/ignored_items.txt
 
-echo "nested_comment|OWNER_ID_1|POST_ID_1|THREAD_ID_1|COMMENT_ID_1" >> private/ignored_items.txt
-echo "nested_comment|OWNER_ID_2|POST_ID_2|THREAD_ID_2|COMMENT_ID_2" >> private/ignored_items.txt
-echo "nested_comment|OWNER_ID_3|POST_ID_3|THREAD_ID_3|COMMENT_ID_3" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|nested_comment|OWNER_ID_1|POST_ID_1|THREAD_ID_1|COMMENT_ID_1" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|nested_comment|OWNER_ID_2|POST_ID_2|THREAD_ID_2|COMMENT_ID_2" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|nested_comment|OWNER_ID_3|POST_ID_3|THREAD_ID_3|COMMENT_ID_3" >> private/ignored_items.txt
 
-echo "all_comments_under|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
-echo "all_comments_under|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
-echo "all_comments_under|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|all_comments_under|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|all_comments_under|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|all_comments_under|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 
-echo "owner|OWNER_ID_1" >> private/ignored_items.txt
-echo "owner|OWNER_ID_2" >> private/ignored_items.txt
-echo "owner|OWNER_ID_3" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|owner|OWNER_ID_1" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|owner|OWNER_ID_2" >> private/ignored_items.txt
+echo "@YYYY_MM_DD|owner|OWNER_ID_3" >> private/ignored_items.txt
 
 ./sms.php
 cp data/sms_db.sqlite_backup_{1,2}
