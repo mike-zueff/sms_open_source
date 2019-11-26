@@ -38,7 +38,7 @@ echo "/PATTERN_1/iu" > private/patterns.txt
 echo "/PATTERN_2/iu" >> private/patterns.txt
 echo "/PATTERN_3/iu" >> private/patterns.txt
 
-D="@YYYY_MM_DD"
+D="YYYY_MM_DD"
 
 echo "${D}|post|OWNER_ID_1|POST_ID_1" > private/ignored_items.txt
 echo "${D}|post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
