@@ -13,6 +13,7 @@ function sms_db_analyze_data_wall_get() {
   global $a_ignored_items;
   global $a_patterns;
   global $o_sqlite;
+  global $s_date_label;
 
   $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
   $i_counter = 1;
@@ -42,7 +43,7 @@ function sms_db_analyze_data_wall_get() {
         }
 
         $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
-        $sms_log_buffer .= 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
 
         foreach ($a_patterns as $a_pattern) {
           $a_matches = [];
@@ -79,6 +80,7 @@ function sms_db_analyze_data_wall_getcomments() {
   global $a_ignored_items;
   global $a_patterns;
   global $o_sqlite;
+  global $s_date_label;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
   $i_counter = 1;
@@ -119,12 +121,12 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . PHP_EOL;
-          $sms_log_buffer .= 'comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
-          $sms_log_buffer .= 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
+          $sms_log_buffer .= $s_date_label . 'comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
+          $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         } else {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id'] . PHP_EOL;
-          $sms_log_buffer .= 'nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
-          $sms_log_buffer .= 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
+          $sms_log_buffer .= $s_date_label . 'nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
+          $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         }
 
         foreach ($a_patterns as $a_pi) {
@@ -309,6 +311,19 @@ function sms_debug($s_message) {
 
 function sms_echo($s_message) {
   echo $s_message . PHP_EOL;
+}
+
+function sms_fs_parse_ignored_items() {
+  global $s_date_label;
+
+  $a_ignored_items = file('private/ignored_items.txt', FILE_IGNORE_NEW_LINES);
+  $a_result = [];
+
+  foreach ($a_ignored_items as $s_ii) {
+    array_push($a_result, substr($s_ii, strlen($s_date_label)));
+  }
+
+  return $a_result;
 }
 
 function sms_log($s_message) {
@@ -562,7 +577,6 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_ignored_items = file('private/ignored_items.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
@@ -572,5 +586,7 @@ $s_vk_api_token = trim(file_get_contents('private/vk_api_token.txt'));
 
 date_default_timezone_set('Europe/Moscow');
 $i_timestamp = time();
+$s_date_label = date('@Y_m_d|');
+$a_ignored_items = sms_fs_parse_ignored_items();
 register_shutdown_function('sms_shutdown');
 sms_echo('SMS started.');
