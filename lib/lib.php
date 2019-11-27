@@ -586,7 +586,7 @@ $s_vk_api_token = trim(file_get_contents('private/vk_api_token.txt'));
 
 date_default_timezone_set('Europe/Moscow');
 $i_timestamp = time();
-$s_date_label = date('Y_m_d|');
+$s_date_label = date('y_W|');
 $a_ignored_items = sms_fs_parse_ignored_items();
 register_shutdown_function('sms_shutdown');
 sms_echo('SMS started.');
