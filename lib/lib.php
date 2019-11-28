@@ -92,6 +92,10 @@ function sms_db_analyze_data_wall_getcomments() {
           continue;
         }
 
+        if (in_array('commentator_id|' . $a_ci['from_id'], $a_ignored_items)) {
+          continue;
+        }
+
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
           continue;
         }
@@ -122,12 +126,13 @@ function sms_db_analyze_data_wall_getcomments() {
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . PHP_EOL;
           $sms_log_buffer .= $s_date_label . 'comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
-          $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         } else {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?reply=' . $a_ci['comment_id'] . '&thread=' . $a_ci['parent_comment_id'] . PHP_EOL;
           $sms_log_buffer .= $s_date_label . 'nested_comment|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . '|' . $a_ci['parent_comment_id'] . '|' . $a_ci['comment_id'] . PHP_EOL;
-          $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         }
+
+        $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'commentator_id|' . $a_ci['from_id'] . PHP_EOL;
 
         foreach ($a_patterns as $a_pi) {
           $a_matches = [];
