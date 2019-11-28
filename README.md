@@ -56,13 +56,13 @@ echo "${D}all_comments_under|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
 echo "${D}all_comments_under|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
 echo "${D}all_comments_under|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 
-echo "${D}commentator_id|FROM_ID_1" >> private/ignored_items.txt
-echo "${D}commentator_id|FROM_ID_2" >> private/ignored_items.txt
-echo "${D}commentator_id|FROM_ID_3" >> private/ignored_items.txt
+echo "${D}from_id|FROM_ID_1" >> private/ignored_items.txt
+echo "${D}from_id|FROM_ID_2" >> private/ignored_items.txt
+echo "${D}from_id|FROM_ID_3" >> private/ignored_items.txt
 
-echo "${D}owner|OWNER_ID_1" >> private/ignored_items.txt
-echo "${D}owner|OWNER_ID_2" >> private/ignored_items.txt
-echo "${D}owner|OWNER_ID_3" >> private/ignored_items.txt
+echo "${D}owner_id|OWNER_ID_1" >> private/ignored_items.txt
+echo "${D}owner_id|OWNER_ID_2" >> private/ignored_items.txt
+echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
 
 ./sms.php
 cp data/sms_db.sqlite_backup_{1,2}
