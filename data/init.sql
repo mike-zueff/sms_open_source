@@ -1,11 +1,11 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   first_name text,
   last_name text,
   settlement_id integer,
   user_id integer unique
 );
 
-CREATE TABLE wall_get (
+CREATE TABLE IF NOT EXISTS wall_get (
   attachments text,
   comments_are_committed integer,
   date integer,
@@ -17,7 +17,7 @@ CREATE TABLE wall_get (
   unique(owner_id,post_id)
 );
 
-CREATE TABLE wall_getcomments (
+CREATE TABLE IF NOT EXISTS wall_getcomments (
   attachments text,
   comment_id integer,
   date integer,
