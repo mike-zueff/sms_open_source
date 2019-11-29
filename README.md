@@ -65,8 +65,6 @@ echo "${D}owner_id|OWNER_ID_2" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
 
 ./sms.php
-cp data/sms_db.sqlite_backup_{1,2}
-cp data/sms_db.sqlite{,_backup_1}
 vim -O private/{patterns,ignored_items,email}.txt
 ./sms.php -a
 vim -O private/{patterns,ignored_items,email}.txt

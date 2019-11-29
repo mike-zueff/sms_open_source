@@ -200,6 +200,11 @@ function sms_db_get_rows_count($o_query_result) {
   return $i_rows_counter;
 }
 
+function sms_db_perform_backup() {
+  copy('data/sms_db.sqlite_backup_1', 'data/sms_db.sqlite_backup_2');
+  copy('data/sms_db.sqlite', 'data/sms_db.sqlite_backup_1');
+}
+
 function sms_db_posts_fetch_comments() {
   global $a_ignored_items;
   global $i_timestamp;
