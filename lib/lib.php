@@ -211,12 +211,20 @@ function sms_db_posts_fetch_comments() {
   global $o_sqlite;
 
   $i_db_data_posts_counter = 0;
-  $o_db_data_rows = $o_sqlite->query('SELECT * FROM wall_get');
+  $o_db_data_rows = $o_sqlite->query('SELECT * FROM wall_get WHERE comments_are_committed = 0');
   $i_db_data_rows_count = sms_db_get_rows_count($o_db_data_rows);
-  $o_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
+  $o_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get WHERE comments_are_committed = 0');
 
   while ($a_pi = $o_db_data_posts->fetchArray()) {
+    $b_comments_are_committed = true;
     $i_offset = 0;
+    $i_pi_date = $a_pi['date'];
+    $i_pi_from_id = $a_pi['from_id'];
+    $i_pi_owner_id = $a_pi['owner_id'];
+    $i_pi_post_id = $a_pi['post_id'];
+    $i_pi_settlement_id = $a_pi['settlement_id'];
+    $s_pi_attachments = $a_pi['attachments'];
+    $s_pi_text = $a_pi['text'];
 
     ++$i_db_data_posts_counter;
     sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $i_db_data_rows_count . ')...');
@@ -293,6 +301,7 @@ function sms_db_posts_fetch_comments() {
                     }
                   }
                 } else {
+                  $b_comments_are_committed = false;
                   sms_debug('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id);
 
                   break;
@@ -304,6 +313,7 @@ function sms_db_posts_fetch_comments() {
           }
         }
       } else {
+        $b_comments_are_committed = false;
         sms_debug('error, wall.getcomments, https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
 
         break;
@@ -311,6 +321,10 @@ function sms_db_posts_fetch_comments() {
 
       $i_offset += I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT;
     } while (!$b_need_for_break);
+
+    if ($b_comments_are_committed) {
+      $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_pi_attachments', 1, $i_pi_settlement_id, $i_pi_date, $i_pi_from_id, $i_pi_owner_id, $i_pi_post_id, '$s_pi_text')");
+    }
   }
 }
 
@@ -576,7 +590,7 @@ function sms_watched_owners_wall_get() {
             $a_db_user_data = sms_user_fetch_data($i_db_from_id);
             $i_db_settlement_id = $a_db_user_data['settlement_id'];
 
-            $o_sqlite->exec("REPLACE INTO wall_get(attachments, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
+            $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', 0, $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
           }
         }
       } else {

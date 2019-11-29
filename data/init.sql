@@ -7,6 +7,7 @@ CREATE TABLE users (
 
 CREATE TABLE wall_get (
   attachments text,
+  comments_are_committed integer,
   date integer,
   from_id integer,
   owner_id integer,
