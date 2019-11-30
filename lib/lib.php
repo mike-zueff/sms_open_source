@@ -556,42 +556,34 @@ function sms_watched_owners_wall_get() {
 
       if ($o_result != null) {
         foreach ($o_result['items'] as $o_ri) {
+          $i_db_date = $o_ri['date'];
+          $i_db_from_id = $o_ri['from_id'];
           $i_db_owner_id = $o_ri['owner_id'];
           $i_db_post_id = $o_ri['id'];
+          $s_db_text = base64_encode($o_ri['text']);
 
-          if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
-            if (!array_key_exists('is_pinned', $o_ri)) {
+          if (array_key_exists('attachments', $o_ri)) {
+            $s_db_attachments = base64_encode(serialize($o_ri['attachments']));
+          } else {
+            $s_db_attachments = base64_encode('');
+          }
+
+          if (!array_key_exists('is_pinned', $o_ri)) {
+            if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
+              continue;
+            }
+
+            if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
               $b_need_for_break = true;
 
               break;
-            } else {
-              continue;
             }
-          } else {
-            $i_db_date = $o_ri['date'];
-
-            if (!array_key_exists('is_pinned', $o_ri)) {
-              if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
-                $b_need_for_break = true;
-
-                break;
-              }
-            }
-
-            $i_db_from_id = $o_ri['from_id'];
-            $s_db_text = base64_encode($o_ri['text']);
-
-            if (array_key_exists('attachments', $o_ri)) {
-              $s_db_attachments = base64_encode(serialize($o_ri['attachments']));
-            } else {
-              $s_db_attachments = base64_encode('');
-            }
-
-            $a_db_user_data = sms_user_fetch_data($i_db_from_id);
-            $i_db_settlement_id = $a_db_user_data['settlement_id'];
-
-            $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', 0, $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
           }
+
+          $a_db_user_data = sms_user_fetch_data($i_db_from_id);
+          $i_db_settlement_id = $a_db_user_data['settlement_id'];
+
+          $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', 0, $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
         }
       } else {
         sms_debug('error, wall.get, ' . $i_offset . ', https://vk.com/wall' . $s_wo . '?own=1');
