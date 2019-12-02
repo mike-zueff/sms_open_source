@@ -568,7 +568,11 @@ function sms_watched_owners_wall_get() {
             $s_db_attachments = base64_encode('');
           }
 
-          if (!array_key_exists('is_pinned', $o_ri)) {
+          if (array_key_exists('is_pinned', $o_ri)) {
+            if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
+              continue;
+            }
+          } else {
             if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
               continue;
             }
