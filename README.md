@@ -64,14 +64,16 @@ echo "${D}owner_id|OWNER_ID_1" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_2" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
 
-./sms.php
+./sms.php -f
+clear; ./sms.php
 vim -O private/{patterns,ignored_items,email}.txt
-./sms.php -a
+clear; ./sms.php
 vim -O private/{patterns,ignored_items,email}.txt
-./sms.php -a
+clear; ./sms.php
 vim -O private/{patterns,ignored_items,email}.txt
-./sms.php -a
-./sms.php
+clear; ./sms.php
+./sms.php -f
+
 ```
 
 ## Credits
