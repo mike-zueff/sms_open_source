@@ -24,7 +24,7 @@ cat data/init.sql | sqlite3 data/sms_db.sqlite
 composer require vkcom/vk-php-sdk
 mkdir private
 echo "TOKEN" > private/vk_api_token.txt
-touch private/email.txt
+touch private/complaints.txt
 
 echo "-GROUP_1" > private/watched_owners.txt
 echo "-GROUP_2" >> private/watched_owners.txt
@@ -66,11 +66,11 @@ echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
 
 ./sms.php -f
 clear; ./sms.php
-vim -O private/{patterns,ignored_items,email}.txt
+vim -O private/{patterns,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{patterns,ignored_items,email}.txt
+vim -O private/{patterns,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{patterns,ignored_items,email}.txt
+vim -O private/{patterns,ignored_items,complaints}.txt
 clear; ./sms.php
 ./sms.php -f
 
