@@ -10,6 +10,7 @@ const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
 function sms_db_analyze_data_wall_get() {
+  global $a_from_id_enforced;
   global $a_ignored_items;
   global $a_patterns;
   global $o_sqlite;
@@ -119,6 +120,7 @@ function sms_db_analyze_data_wall_get() {
 }
 
 function sms_db_analyze_data_wall_getcomments() {
+  global $a_from_id_enforced;
   global $a_ignored_items;
   global $a_patterns;
   global $o_sqlite;
