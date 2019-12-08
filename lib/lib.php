@@ -21,14 +21,14 @@ function sms_db_analyze_data_wall_get() {
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
       if ($a_pi['from_id'] > 0) {
-        $b_from_id_forced = false;
+        $b_from_id_enforced = false;
 
-        if (in_array($a_pi['from_id'], $a_from_id_forced)) {
-          $b_from_id_forced = true;
+        if (in_array($a_pi['from_id'], $a_from_id_enforced)) {
+          $b_from_id_enforced = true;
         }
 
         if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
-          if (!$b_from_id_forced) {
+          if (!$b_from_id_enforced) {
             continue;
           }
         }
@@ -76,13 +76,12 @@ function sms_db_analyze_data_wall_get() {
           $sms_log_buffer .= $a_settlement_data['settlement'] . PHP_EOL;
         }
 
-        $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
-
-        if ($b_from_id_forced) {
+        if ($b_from_id_enforced) {
           $b_need_for_log = true;
-          $sms_log_buffer .= 'FORCED!!!' . PHP_EOL;
+          $sms_log_buffer .= 'ENFORCED!!!' . PHP_EOL;
         }
 
+        $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_pi['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
@@ -131,8 +130,14 @@ function sms_db_analyze_data_wall_getcomments() {
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       if ($a_ci['from_id'] > 0) {
+        $b_from_id_enforced = false;
+
+        if (in_array($a_ci['from_id'], $a_from_id_enforced)) {
+          $b_from_id_enforced = true;
+        }
+
         if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
-          if (!in_array($a_ci['from_id'], $a_from_id_forced)) {
+          if (!$b_from_id_enforced) {
             continue;
           }
         }
@@ -164,7 +169,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          if (!in_array($a_ci['from_id'], $a_from_id_forced)) {
+          if (!$b_from_id_enforced) {
             continue;
           }
         }
@@ -194,6 +199,11 @@ function sms_db_analyze_data_wall_getcomments() {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
         } else {
           $sms_log_buffer .= $a_settlement_data['settlement'] . PHP_EOL;
+        }
+
+        if ($b_from_id_enforced) {
+          $b_need_for_log = true;
+          $sms_log_buffer .= 'ENFORCED!!!' . PHP_EOL;
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
@@ -673,7 +683,7 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_from_id_forced = file('private/from_id_forced.txt', FILE_IGNORE_NEW_LINES);
+$a_from_id_enforced = file('private/from_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
