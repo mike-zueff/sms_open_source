@@ -34,6 +34,10 @@ echo "USER_1" >> private/watched_owners.txt
 echo "USER_2" >> private/watched_owners.txt
 echo "USER_3" >> private/watched_owners.txt
 
+echo "USER_1" > private/from_id_forced.txt
+echo "USER_2" >> private/from_id_forced.txt
+echo "USER_3" >> private/from_id_forced.txt
+
 echo "/PATTERN_1/iu" > private/patterns.txt
 echo "/PATTERN_2/iu" >> private/patterns.txt
 echo "/PATTERN_3/iu" >> private/patterns.txt
@@ -64,13 +68,13 @@ echo "${D}all_from_with_fragment|FROM_ID_1|FRAGMENT_1" >> private/ignored_items.
 echo "${D}all_from_with_fragment|FROM_ID_2|FRAGMENT_2" >> private/ignored_items.txt
 echo "${D}all_from_with_fragment|FROM_ID_3|FRAGMENT_3" >> private/ignored_items.txt
 
-echo "${D}from_id|FROM_ID_1" >> private/ignored_items.txt
-echo "${D}from_id|FROM_ID_2" >> private/ignored_items.txt
-echo "${D}from_id|FROM_ID_3" >> private/ignored_items.txt
-
 echo "${D}owner_id|OWNER_ID_1" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_2" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
+
+echo "${D}from_id|FROM_ID_1" >> private/ignored_items.txt
+echo "${D}from_id|FROM_ID_2" >> private/ignored_items.txt
+echo "${D}from_id|FROM_ID_3" >> private/ignored_items.txt
 
 ./sms.php -f
 clear; ./sms.php
