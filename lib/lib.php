@@ -78,7 +78,7 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
         $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
-        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
+        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_pi['from_id'] . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
@@ -200,7 +200,7 @@ function sms_db_analyze_data_wall_getcomments() {
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
         $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
-        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
+        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
