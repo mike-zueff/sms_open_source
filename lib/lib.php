@@ -21,11 +21,11 @@ function sms_db_analyze_data_wall_get() {
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
       if ($a_pi['from_id'] > 0) {
-        if (in_array('from_id|' . $a_pi['from_id'], $a_ignored_items)) {
+        if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
           continue;
         }
 
-        if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
+        if (in_array('from_id|' . $a_pi['from_id'], $a_ignored_items)) {
           continue;
         }
 
@@ -71,8 +71,8 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_pi['from_id'] . '|...' . PHP_EOL;
-        $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
 
         foreach ($a_patterns as $a_pattern) {
           $a_matches = [];
@@ -117,11 +117,11 @@ function sms_db_analyze_data_wall_getcomments() {
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       if ($a_ci['from_id'] > 0) {
-        if (in_array('from_id|' . $a_ci['from_id'], $a_ignored_items)) {
+        if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
           continue;
         }
 
-        if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
+        if (in_array('from_id|' . $a_ci['from_id'], $a_ignored_items)) {
           continue;
         }
 
@@ -189,8 +189,8 @@ function sms_db_analyze_data_wall_getcomments() {
         $sms_log_buffer .= $s_date_label . 'all_comments_from_under|' . $a_ci['from_id'] . '|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_ci['from_id'] . '|...' . PHP_EOL;
-        $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_ci['owner_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_ci['from_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_ci['owner_id'] . PHP_EOL;
 
         foreach ($a_patterns as $a_pi) {
           $a_matches = [];
