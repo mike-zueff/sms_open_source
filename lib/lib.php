@@ -9,6 +9,20 @@ const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 
+function sms_data_parse_from_id_enforced() {
+  global $a_watched_owners;
+
+  $a_result = [];
+
+  foreach ($a_watched_owners as $s_wi) {
+    if ($s_wi > 0) {
+      array_push($a_result, $s_wi);
+    }
+  }
+
+  return $a_result;
+}
+
 function sms_db_analyze_data_wall_get() {
   global $a_from_id_enforced;
   global $a_ignored_items;
@@ -22,14 +36,8 @@ function sms_db_analyze_data_wall_get() {
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
       if ($a_pi['from_id'] > 0) {
-        $b_from_id_enforced = false;
-
-        if (in_array($a_pi['from_id'], $a_from_id_enforced)) {
-          $b_from_id_enforced = true;
-        }
-
         if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced) {
+          if (!in_array($a_pi['from_id'], $a_from_id_enforced)) {
             continue;
           }
         }
@@ -69,17 +77,13 @@ function sms_db_analyze_data_wall_get() {
         $b_need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
-        $sms_log_buffer .= '#' . $i_counter . ': ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
         } else {
           $sms_log_buffer .= $a_settlement_data['settlement'] . PHP_EOL;
-        }
-
-        if ($b_from_id_enforced) {
-          $b_need_for_log = true;
-          $sms_log_buffer .= 'ENFORCED!!!' . PHP_EOL;
         }
 
         $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
@@ -195,7 +199,8 @@ function sms_db_analyze_data_wall_getcomments() {
         $b_need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
-        $sms_log_buffer .= '#' . $i_counter . ': ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
           $sms_log_buffer .= $a_settlement_data['district'] . ', ' . $a_settlement_data['settlement'] . PHP_EOL;
@@ -205,7 +210,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
-          $sms_log_buffer .= 'ENFORCED!!!' . PHP_EOL;
+          $sms_log_buffer .= '  ENFORCED!!!' . PHP_EOL;
         }
 
         if ($a_ci['parent_comment_id'] == I_NULL_VALUE) {
@@ -619,10 +624,10 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
 }
 
 function sms_watched_owners_wall_get() {
+  global $a_watched_owners;
   global $i_timestamp;
   global $o_sqlite;
 
-  $a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
   $i_watched_owners_counter = 0;
 
   foreach ($a_watched_owners as $s_wo) {
@@ -685,9 +690,9 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_from_id_enforced = file('private/from_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
+$a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
 $o_vk_api_client = new VK\Client\VKApiClient();
 $r_log_file = fopen('data/log.txt', 'w');
@@ -696,6 +701,7 @@ $s_vk_api_token = trim(file_get_contents('private/vk_api_token.txt'));
 date_default_timezone_set('Europe/Moscow');
 $i_timestamp = time();
 $s_date_label = date('y_W|');
+$a_from_id_enforced = sms_data_parse_from_id_enforced();
 $a_ignored_items = sms_fs_parse_ignored_items();
 register_shutdown_function('sms_shutdown');
 sms_echo('SMS started.');
