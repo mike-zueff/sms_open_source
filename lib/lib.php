@@ -29,6 +29,28 @@ function sms_db_analyze_data_wall_get() {
           continue;
         }
 
+        $b_need_for_continue = false;
+
+        foreach ($a_ignored_items as $a_ii) {
+          $a_matches = [];
+
+          if (preg_match('/^all_from_with_fragment\|' . $a_pi['from_id'] . '\|(.+)$/iu', $a_ii, $a_matches)) {
+            if (preg_match('/' . $a_matches[1] . '/iu', base64_decode($a_pi['text']))) {
+              $b_need_for_continue = true;
+              break;
+            }
+
+            if (preg_match('/' . $a_matches[1] . '/iu', base64_decode($a_pi['attachments']))) {
+              $b_need_for_continue = true;
+              break;
+            }
+          }
+        }
+
+        if ($b_need_for_continue) {
+          continue;
+        }
+
         if (in_array('post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'], $a_ignored_items)) {
           continue;
         }
@@ -48,6 +70,7 @@ function sms_db_analyze_data_wall_get() {
 
         $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_pi['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
 
@@ -102,11 +125,33 @@ function sms_db_analyze_data_wall_getcomments() {
           continue;
         }
 
-        if (in_array('all_comments_from_under|' . $a_ci['from_id'] . '|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
+        $b_need_for_continue = false;
+
+        foreach ($a_ignored_items as $a_ii) {
+          $a_matches = [];
+
+          if (preg_match('/^all_from_with_fragment\|' . $a_ci['from_id'] . '\|(.+)$/iu', $a_ii, $a_matches)) {
+            if (preg_match('/' . $a_matches[1] . '/iu', base64_decode($a_ci['text']))) {
+              $b_need_for_continue = true;
+              break;
+            }
+
+            if (preg_match('/' . $a_matches[1] . '/iu', base64_decode($a_ci['attachments']))) {
+              $b_need_for_continue = true;
+              break;
+            }
+          }
+        }
+
+        if ($b_need_for_continue) {
           continue;
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
+          continue;
+        }
+
+        if (in_array('all_comments_from_under|' . $a_ci['from_id'] . '|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
           continue;
         }
 
@@ -143,6 +188,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         $sms_log_buffer .= $s_date_label . 'all_comments_from_under|' . $a_ci['from_id'] . '|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_ci['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_ci['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_ci['owner_id'] . PHP_EOL;
 

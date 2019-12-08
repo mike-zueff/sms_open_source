@@ -60,6 +60,10 @@ echo "${D}all_comments_under|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
 echo "${D}all_comments_under|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
 echo "${D}all_comments_under|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 
+echo "${D}all_from_with_fragment|FROM_ID_1|FRAGMENT_1" >> private/ignored_items.txt
+echo "${D}all_from_with_fragment|FROM_ID_2|FRAGMENT_2" >> private/ignored_items.txt
+echo "${D}all_from_with_fragment|FROM_ID_3|FRAGMENT_3" >> private/ignored_items.txt
+
 echo "${D}from_id|FROM_ID_1" >> private/ignored_items.txt
 echo "${D}from_id|FROM_ID_2" >> private/ignored_items.txt
 echo "${D}from_id|FROM_ID_3" >> private/ignored_items.txt
