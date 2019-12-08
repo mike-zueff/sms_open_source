@@ -52,6 +52,10 @@ echo "${D}nested_comment|OWNER_ID_1|POST_ID_1|THREAD_ID_1|COMMENT_ID_1" >> priva
 echo "${D}nested_comment|OWNER_ID_2|POST_ID_2|THREAD_ID_2|COMMENT_ID_2" >> private/ignored_items.txt
 echo "${D}nested_comment|OWNER_ID_3|POST_ID_3|THREAD_ID_3|COMMENT_ID_3" >> private/ignored_items.txt
 
+echo "${D}all_comments_from_under|FROM_ID_1|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
+echo "${D}all_comments_from_under|FROM_ID_2|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
+echo "${D}all_comments_from_under|FROM_ID_3|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
+
 echo "${D}all_comments_under|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
 echo "${D}all_comments_under|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
 echo "${D}all_comments_under|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
