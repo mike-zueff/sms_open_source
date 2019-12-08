@@ -21,8 +21,16 @@ function sms_db_analyze_data_wall_get() {
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     if (sms_settlement_check($a_pi['settlement_id'])) {
       if ($a_pi['from_id'] > 0) {
+        $b_from_id_forced = false;
+
+        if (in_array($a_pi['from_id'], $a_from_id_forced)) {
+          $b_from_id_forced = true;
+        }
+
         if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
-          continue;
+          if (!$b_from_id_forced) {
+            continue;
+          }
         }
 
         if (in_array('from_id|' . $a_pi['from_id'], $a_ignored_items)) {
@@ -57,7 +65,7 @@ function sms_db_analyze_data_wall_get() {
 
         $a_db_user_data = sms_user_fetch_data($a_pi['from_id']);
         $a_settlement_data = sms_settlement_fetch_data($a_pi['settlement_id']);
-        $need_for_log = false;
+        $b_need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
         $sms_log_buffer .= '#' . $i_counter . ': ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
@@ -69,6 +77,12 @@ function sms_db_analyze_data_wall_get() {
         }
 
         $sms_log_buffer .= 'https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id'] . PHP_EOL;
+
+        if ($b_from_id_forced) {
+          $b_need_for_log = true;
+          $sms_log_buffer .= 'FORCED!!!' . PHP_EOL;
+        }
+
         $sms_log_buffer .= $s_date_label . 'post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_pi['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
@@ -79,7 +93,7 @@ function sms_db_analyze_data_wall_get() {
           preg_match_all($a_pattern, base64_decode($a_pi['text']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            $need_for_log = true;
+            $b_need_for_log = true;
             $sms_log_buffer .= '  Text: ' . $a_mi . PHP_EOL;
           }
         }
@@ -89,14 +103,14 @@ function sms_db_analyze_data_wall_get() {
           preg_match_all($a_pattern, base64_decode($a_pi['attachments']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            $need_for_log = true;
+            $b_need_for_log = true;
             $sms_log_buffer .= '  Attachments: ' . $a_mi . PHP_EOL;
           }
         }
 
         $sms_log_buffer .= '********************************************************************************';
 
-        if ($need_for_log) {
+        if ($b_need_for_log) {
           sms_log($sms_log_buffer);
           ++$i_counter;
         }
@@ -118,7 +132,9 @@ function sms_db_analyze_data_wall_getcomments() {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       if ($a_ci['from_id'] > 0) {
         if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
-          continue;
+          if (!in_array($a_ci['from_id'], $a_from_id_forced)) {
+            continue;
+          }
         }
 
         if (in_array('from_id|' . $a_ci['from_id'], $a_ignored_items)) {
@@ -148,7 +164,9 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          continue;
+          if (!in_array($a_ci['from_id'], $a_from_id_forced)) {
+            continue;
+          }
         }
 
         if (in_array('all_comments_from_under|' . $a_ci['from_id'] . '|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
@@ -167,7 +185,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         $a_db_user_data = sms_user_fetch_data($a_ci['from_id']);
         $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
-        $need_for_log = false;
+        $b_need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
         $sms_log_buffer .= '#' . $i_counter . ': ' . base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . PHP_EOL;
@@ -197,7 +215,7 @@ function sms_db_analyze_data_wall_getcomments() {
           preg_match_all($a_pi, base64_decode($a_ci['text']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            $need_for_log = true;
+            $b_need_for_log = true;
             $sms_log_buffer .= '  Text: ' . $a_mi . PHP_EOL;
           }
         }
@@ -207,14 +225,14 @@ function sms_db_analyze_data_wall_getcomments() {
           preg_match_all($a_pi, base64_decode($a_ci['attachments']), $a_matches);
 
           foreach ($a_matches[0] as $a_mi) {
-            $need_for_log = true;
+            $b_need_for_log = true;
             $sms_log_buffer .= '  Attachments: ' . $a_mi . PHP_EOL;
           }
         }
 
         $sms_log_buffer .= '********************************************************************************';
 
-        if ($need_for_log) {
+        if ($b_need_for_log) {
           sms_log($sms_log_buffer);
           ++$i_counter;
         }
