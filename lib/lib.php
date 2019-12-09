@@ -4,6 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 const B_DEBUG_ENABLED = true;
 const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 9;
+const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
 const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
@@ -76,7 +77,7 @@ function sms_db_analyze_data_wall_get() {
         $a_settlement_data = sms_settlement_fetch_data($a_pi['settlement_id']);
         $b_need_for_log = false;
         $sms_log_buffer = '';
-        $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
+        $sms_log_buffer .= sms_print_repeat('*', I_MAX_LINE_SIZE) . PHP_EOL;
         $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_pi['from_id'] . PHP_EOL;
 
@@ -112,7 +113,12 @@ function sms_db_analyze_data_wall_get() {
           }
         }
 
-        $sms_log_buffer .= '********************************************************************************';
+        if (base64_decode($a_pi['attachments']) == '') {
+          $sms_log_buffer .= '  TEXT WITHOUT ATTACHMENTS:' . PHP_EOL;
+          $sms_log_buffer .= sms_print_output_multiline(base64_decode($a_pi['text']));
+        }
+
+        $sms_log_buffer .= sms_print_repeat('*', I_MAX_LINE_SIZE);
 
         if ($b_need_for_log) {
           sms_log($sms_log_buffer);
@@ -198,7 +204,7 @@ function sms_db_analyze_data_wall_getcomments() {
         $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
         $b_need_for_log = false;
         $sms_log_buffer = '';
-        $sms_log_buffer .= '********************************************************************************' . PHP_EOL;
+        $sms_log_buffer .= sms_print_repeat('*', I_MAX_LINE_SIZE) . PHP_EOL;
         $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
@@ -247,7 +253,12 @@ function sms_db_analyze_data_wall_getcomments() {
           }
         }
 
-        $sms_log_buffer .= '********************************************************************************';
+        if (base64_decode($a_ci['attachments']) == '') {
+          $sms_log_buffer .= '  TEXT WITHOUT ATTACHMENTS:' . PHP_EOL;
+          $sms_log_buffer .= sms_print_output_multiline(base64_decode($a_ci['text']));
+        }
+
+        $sms_log_buffer .= sms_print_repeat('*', I_MAX_LINE_SIZE);
 
         if ($b_need_for_log) {
           sms_log($sms_log_buffer);
@@ -437,7 +448,7 @@ function sms_fs_parse_ignored_items() {
   $a_result = [];
 
   foreach ($a_ignored_items as $s_ii) {
-    array_push($a_result, substr($s_ii, strlen($s_date_label)));
+    array_push($a_result, mb_substr($s_ii, mb_strlen($s_date_label)));
   }
 
   return $a_result;
@@ -448,6 +459,26 @@ function sms_log($s_message) {
 
   fwrite($r_log_file, $s_message . PHP_EOL);
   sms_echo($s_message);
+}
+
+function sms_print_output_multiline($s_output) {
+  $s_result = '';
+
+  for ($i = 0; $i < mb_strlen($s_output); $i += I_MAX_LINE_SIZE - mb_strlen('  ')) {
+    $s_result .= '  ' . preg_replace('/^\s+/u', '', mb_substr($s_output, $i, I_MAX_LINE_SIZE - mb_strlen('  '))) . PHP_EOL;
+  }
+
+  return $s_result;
+}
+
+function sms_print_repeat($s_fragment, $i_count) {
+  $s_result = '';
+
+  for ($i = 0; $i < $i_count ; ++$i) {
+    $s_result .= $s_fragment;
+  }
+
+  return $s_result;
 }
 
 function sms_settlement_check($i_settlement_id) {
