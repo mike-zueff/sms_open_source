@@ -78,7 +78,7 @@ function sms_db_analyze_data_wall_get() {
         $b_need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= sms_print_repeat('*', I_MAX_LINE_SIZE) . PHP_EOL;
-        $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= 'Post #' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_pi['from_id'] . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
@@ -99,7 +99,7 @@ function sms_db_analyze_data_wall_get() {
 
           foreach ($a_matches[0] as $a_mi) {
             $b_need_for_log = true;
-            $sms_log_buffer .= '  Text: ' . $a_mi . PHP_EOL;
+            $sms_log_buffer .= '  IN TEXT: ' . sms_php_mb_trim($a_mi) . PHP_EOL;
           }
         }
 
@@ -109,7 +109,7 @@ function sms_db_analyze_data_wall_get() {
 
           foreach ($a_matches[0] as $a_mi) {
             $b_need_for_log = true;
-            $sms_log_buffer .= '  Attachments: ' . $a_mi . PHP_EOL;
+            $sms_log_buffer .= '  IN ATTACHMENTS: ' . sms_php_mb_trim($a_mi) . PHP_EOL;
           }
         }
 
@@ -205,7 +205,7 @@ function sms_db_analyze_data_wall_getcomments() {
         $b_need_for_log = false;
         $sms_log_buffer = '';
         $sms_log_buffer .= sms_print_repeat('*', I_MAX_LINE_SIZE) . PHP_EOL;
-        $sms_log_buffer .= '#' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= 'Comment #' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
         if ($a_settlement_data['district'] != '' ) {
@@ -230,7 +230,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
-          $sms_log_buffer .= '  ENFORCED!!!' . PHP_EOL;
+          $sms_log_buffer .= '  ENFORCED' . PHP_EOL;
         }
 
         foreach ($a_patterns as $a_pi) {
@@ -239,7 +239,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
           foreach ($a_matches[0] as $a_mi) {
             $b_need_for_log = true;
-            $sms_log_buffer .= '  Text: ' . $a_mi . PHP_EOL;
+            $sms_log_buffer .= '  IN TEXT: ' . sms_php_mb_trim($a_mi) . PHP_EOL;
           }
         }
 
@@ -249,7 +249,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
           foreach ($a_matches[0] as $a_mi) {
             $b_need_for_log = true;
-            $sms_log_buffer .= '  Attachments: ' . $a_mi . PHP_EOL;
+            $sms_log_buffer .= '  IN ATTACHMENTS: ' . sms_php_mb_trim($a_mi) . PHP_EOL;
           }
         }
 
@@ -461,11 +461,15 @@ function sms_log($s_message) {
   sms_echo($s_message);
 }
 
+function sms_php_mb_trim($s_string) {
+  return preg_replace('/(^\s+)|(\s+$)/u', '', $s_string);
+}
+
 function sms_print_output_multiline($s_output) {
   $s_result = '';
 
   for ($i = 0; $i < mb_strlen($s_output); $i += I_MAX_LINE_SIZE - mb_strlen('  ')) {
-    $s_result .= '  ' . preg_replace('/^\s+/u', '', mb_substr($s_output, $i, I_MAX_LINE_SIZE - mb_strlen('  '))) . PHP_EOL;
+    $s_result .= '  ' . sms_php_mb_trim(mb_substr($s_output, $i, I_MAX_LINE_SIZE - mb_strlen('  '))) . PHP_EOL;
   }
 
   return $s_result;
