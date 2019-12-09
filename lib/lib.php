@@ -31,7 +31,7 @@ function sms_db_analyze_data_wall_get() {
   global $o_sqlite;
   global $s_date_label;
 
-  $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get');
+  $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get ORDER BY from_id');
   $i_counter = 1;
 
   while ($a_pi = $a_db_data_posts->fetchArray()) {
@@ -136,7 +136,7 @@ function sms_db_analyze_data_wall_getcomments() {
   global $o_sqlite;
   global $s_date_label;
 
-  $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments');
+  $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments ORDER BY from_id');
   $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
