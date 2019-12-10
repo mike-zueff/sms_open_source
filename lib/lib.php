@@ -330,6 +330,7 @@ function sms_db_get_rows_count($o_query_result) {
 }
 
 function sms_db_perform_backup() {
+  copy('data/sms_db.sqlite_backup_2', 'data/sms_db.sqlite_backup_3');
   copy('data/sms_db.sqlite_backup_1', 'data/sms_db.sqlite_backup_2');
   copy('data/sms_db.sqlite', 'data/sms_db.sqlite_backup_1');
 }

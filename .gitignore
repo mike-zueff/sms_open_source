@@ -5,5 +5,6 @@ data/sms_db.sqlite
 data/sms_db.sqlite-journal
 data/sms_db.sqlite_backup_1
 data/sms_db.sqlite_backup_2
+data/sms_db.sqlite_backup_3
 private
 vendor
