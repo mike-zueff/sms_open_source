@@ -12,6 +12,7 @@ const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 const S_TERMINAL_GREEN = "\e[92m";
 const S_TERMINAL_RED = "\e[91m";
 const S_TERMINAL_RESET = "\e[0m";
+const S_TERMINAL_YELLOW = "\e[93m";
 
 function sms_data_parse_from_id_enforced() {
   global $a_watched_owners;
@@ -238,7 +239,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
-          $sms_log_buffer .= '  ENFORCED' . PHP_EOL;
+          $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED' . S_TERMINAL_RESET . PHP_EOL;
         }
 
         foreach ($a_patterns as $a_pi) {
