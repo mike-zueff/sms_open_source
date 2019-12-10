@@ -475,7 +475,7 @@ function sms_log($s_message) {
 }
 
 function sms_php_mb_trim($s_string) {
-  return preg_replace('/(^\s+)|(\s+$)/u', '', $s_string);
+  return preg_replace('/(\n)|(\r)/u', ' ', preg_replace('/(^\s+)|(\s+$)/u', '', $s_string));
 }
 
 function sms_print_output_multiline($s_output) {
