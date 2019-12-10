@@ -757,7 +757,7 @@ function sms_watched_owners_wall_get() {
   }
 }
 
-$a_owner_id_enforced = file('private/owners_id_enforced.txt', FILE_IGNORE_NEW_LINES);
+$a_owner_id_enforced = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
