@@ -34,6 +34,14 @@ echo "USER_1" >> private/watched_owners.txt
 echo "USER_2" >> private/watched_owners.txt
 echo "USER_3" >> private/watched_owners.txt
 
+echo "-GROUP_1" > private/owner_id_enforced.txt
+echo "-GROUP_2" >> private/owner_id_enforced.txt
+echo "-GROUP_3" >> private/owner_id_enforced.txt
+
+echo "USER_1" >> private/owner_id_enforced.txt
+echo "USER_2" >> private/owner_id_enforced.txt
+echo "USER_3" >> private/owner_id_enforced.txt
+
 echo "USER_1" > private/from_id_enforced.txt
 echo "USER_2" >> private/from_id_enforced.txt
 echo "USER_3" >> private/from_id_enforced.txt

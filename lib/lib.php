@@ -9,6 +9,7 @@ const I_NULL_VALUE = -1;
 const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
+const S_TERMINAL_CYAN = "\e[96m";
 const S_TERMINAL_GREEN = "\e[92m";
 const S_TERMINAL_RED = "\e[91m";
 const S_TERMINAL_RESET = "\e[0m";
@@ -31,6 +32,7 @@ function sms_data_parse_from_id_enforced() {
 function sms_db_analyze_data_wall_get() {
   global $a_from_id_enforced;
   global $a_ignored_items;
+  global $a_owner_id_enforced;
   global $a_patterns;
   global $b_need_to_print_first_line;
   global $o_sqlite;
@@ -97,6 +99,11 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
 
+        if (in_array($a_pi['owner_id'], $a_owner_id_enforced)) {
+          $b_need_for_log = true;
+          $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
+        }
+
         foreach ($a_patterns as $a_pattern) {
           $a_matches = [];
           preg_match_all($a_pattern, base64_decode($a_pi['text']), $a_matches);
@@ -141,6 +148,7 @@ function sms_db_analyze_data_wall_get() {
 function sms_db_analyze_data_wall_getcomments() {
   global $a_from_id_enforced;
   global $a_ignored_items;
+  global $a_owner_id_enforced;
   global $a_patterns;
   global $b_need_to_print_first_line;
   global $o_sqlite;
@@ -153,9 +161,14 @@ function sms_db_analyze_data_wall_getcomments() {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       if ($a_ci['from_id'] > 0) {
         $b_from_id_enforced = false;
+        $b_owner_id_enforced = false;
 
         if (in_array($a_ci['from_id'], $a_from_id_enforced)) {
           $b_from_id_enforced = true;
+        }
+
+        if (in_array($a_ci['owner_id'], $a_owner_id_enforced)) {
+          $b_owner_id_enforced = true;
         }
 
         if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
@@ -191,7 +204,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced) {
+          if (!$b_from_id_enforced && !$b_owner_id_enforced) {
             continue;
           }
         }
@@ -239,7 +252,12 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
-          $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED' . S_TERMINAL_RESET . PHP_EOL;
+          $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
+        }
+
+        if ($b_owner_id_enforced) {
+          $b_need_for_log = true;
+          $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
         foreach ($a_patterns as $a_pi) {
@@ -739,6 +757,7 @@ function sms_watched_owners_wall_get() {
   }
 }
 
+$a_owner_id_enforced = file('private/owners_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
