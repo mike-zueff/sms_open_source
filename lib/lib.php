@@ -161,14 +161,9 @@ function sms_db_analyze_data_wall_getcomments() {
     if (sms_settlement_check($a_ci['settlement_id'])) {
       if ($a_ci['from_id'] > 0) {
         $b_from_id_enforced = false;
-        $b_owner_id_enforced = false;
 
         if (in_array($a_ci['from_id'], $a_from_id_enforced)) {
           $b_from_id_enforced = true;
-        }
-
-        if (in_array($a_ci['owner_id'], $a_owner_id_enforced)) {
-          $b_owner_id_enforced = true;
         }
 
         if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
@@ -204,7 +199,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced && !$b_owner_id_enforced) {
+          if (!$b_from_id_enforced) {
             continue;
           }
         }
@@ -255,7 +250,7 @@ function sms_db_analyze_data_wall_getcomments() {
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if ($b_owner_id_enforced) {
+        if (in_array($a_ci['owner_id'], $a_owner_id_enforced)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
