@@ -24,6 +24,7 @@ git clone https://github.com/mike-zueff/sms_open_source.git
 cd sms_open_source
 cat data/init.sql | sqlite3 data/sms_db.sqlite
 composer require vkcom/vk-php-sdk
+touch data/sms_db.sqlite_backup_{1,2,3}
 mkdir private
 echo "TOKEN" > private/vk_api_token.txt
 touch private/complaints.txt
