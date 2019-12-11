@@ -82,11 +82,11 @@ echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
 
 ./sms.php -f
 clear; ./sms.php
-vim -O private/{watched_owners,patterns,ignored_items,complaints}.txt
+vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{watched_owners,patterns,ignored_items,complaints}.txt
+vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{watched_owners,patterns,ignored_items,complaints}.txt
+vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
 clear; ./sms.php
 ./sms.php -f
 
