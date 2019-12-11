@@ -30,7 +30,6 @@ function sms_data_parse_from_id_enforced() {
 }
 
 function sms_db_analyze_data_wall_get() {
-  global $a_from_id_enforced;
   global $a_ignored_items;
   global $a_owner_id_enforced;
   global $a_patterns;
@@ -45,9 +44,7 @@ function sms_db_analyze_data_wall_get() {
     if (sms_settlement_check($a_pi['settlement_id'])) {
       if ($a_pi['from_id'] > 0) {
         if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
-          if (!in_array($a_pi['from_id'], $a_from_id_enforced)) {
-            continue;
-          }
+          continue;
         }
 
         if (in_array('from_id|' . $a_pi['from_id'], $a_ignored_items)) {
@@ -167,9 +164,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if (in_array('owner_id|' . $a_ci['owner_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced) {
-            continue;
-          }
+          continue;
         }
 
         if (in_array('from_id|' . $a_ci['from_id'], $a_ignored_items)) {
