@@ -17,6 +17,8 @@ Big data analytics for social media
 - LiveJournal
 
 ## Usage
+
+### Initial steps
 ```
 git clone https://github.com/mike-zueff/sms_open_source.git
 cd sms_open_source
@@ -79,7 +81,10 @@ echo "${D}from_id|FROM_ID_3" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_1" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_2" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
+```
 
+### Weekly steps
+```
 ./sms.php -f
 clear; ./sms.php
 vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
@@ -88,8 +93,6 @@ vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complain
 clear; ./sms.php
 vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
 clear; ./sms.php
-./sms.php -f
-
 ```
 
 ## Credits
