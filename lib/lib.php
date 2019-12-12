@@ -367,14 +367,14 @@ function sms_db_posts_fetch_comments() {
 
         foreach ($o_result['items'] as $o_ri) {
           $i_db_comment_id = $o_ri['id'];
+          $i_db_parent_comment_id = I_NULL_VALUE;
+          $i_offset_nested = I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT;
 
           if (!array_key_exists('deleted', $o_ri)) {
             $i_db_date = $o_ri['date'];
             $i_db_from_id = $o_ri['from_id'];
             $i_db_owner_id = $o_ri['owner_id'];
-            $i_db_parent_comment_id = I_NULL_VALUE;
             $i_db_post_id = $o_ri['post_id'];
-            $i_offset_nested = I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT;
             $s_db_text = base64_encode($o_ri['text']);
 
             if (array_key_exists('attachments', $o_ri)) {
