@@ -8,6 +8,7 @@ const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
 const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
+const I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT = 10;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
 const S_TERMINAL_CYAN = "\e[96m";
 const S_TERMINAL_GREEN = "\e[92m";
@@ -387,6 +388,31 @@ function sms_db_posts_fetch_comments() {
             $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_comment_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_parent_comment_id, $i_db_post_id, '$s_db_text')");
 
             if ($o_ri['thread']['count'] > 0) {
+              foreach ($o_ri['thread']['items'] as $o_riti) {
+                $i_db_comment_id_riti = $o_riti['id'];
+                $i_db_date_riti = $o_riti['date'];
+                $i_db_from_id_riti = $o_riti['from_id'];
+                $i_db_owner_id_riti = $o_riti['owner_id'];
+                $i_db_parent_comment_id_riti = $i_db_comment_id;
+                $i_db_post_id_riti = $o_riti['post_id'];
+                $s_db_text_riti = base64_encode($o_riti['text']);
+
+                if (array_key_exists('attachments', $o_riti)) {
+                  $s_db_attachments_riti = base64_encode(serialize($o_riti['attachments']));
+                } else {
+                  $s_db_attachments_riti = base64_encode('');
+                }
+
+                $a_db_user_data_riti = sms_user_fetch_data($i_db_from_id_riti);
+                $i_db_settlement_id_riti = $a_db_user_data_riti['settlement_id'];
+
+                if (sms_settlement_check($i_db_settlement_id_riti)) {
+                  $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_riti', $i_db_settlement_id_riti, $i_db_comment_id_riti, $i_db_date_riti, $i_db_from_id_riti, $i_db_owner_id_riti, $i_db_parent_comment_id_riti, $i_db_post_id_riti, '$s_db_text_riti')");
+                }
+              }
+            }
+
+            if ($o_ri['thread']['count'] > I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT) {
               do {
                 $b_need_for_break_nested = false;
                 $o_result_nested = sms_vk_api_wall_getcomments($a_pi['owner_id'], $a_pi['post_id'], $i_offset_nested, $i_db_comment_id);
@@ -665,6 +691,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
     'post_id' => $i_post_id,
     'preview_length' => 0,
     'sort' => 'asc',
+    'thread_items_count' => I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT,
   ];
 
   if ($i_comment_id != I_NULL_VALUE) {
