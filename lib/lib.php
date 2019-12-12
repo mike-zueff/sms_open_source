@@ -366,14 +366,15 @@ function sms_db_posts_fetch_comments() {
         }
 
         foreach ($o_result['items'] as $o_ri) {
+          $i_db_comment_id = $o_ri['id'];
+
           if (!array_key_exists('deleted', $o_ri)) {
-            $i_db_comment_id = $o_ri['id'];
             $i_db_date = $o_ri['date'];
             $i_db_from_id = $o_ri['from_id'];
             $i_db_owner_id = $o_ri['owner_id'];
             $i_db_parent_comment_id = I_NULL_VALUE;
             $i_db_post_id = $o_ri['post_id'];
-            $i_offset_nested = 0;
+            $i_offset_nested = I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT;
             $s_db_text = base64_encode($o_ri['text']);
 
             if (array_key_exists('attachments', $o_ri)) {
@@ -386,76 +387,76 @@ function sms_db_posts_fetch_comments() {
             $i_db_settlement_id = $a_db_user_data['settlement_id'];
 
             $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments', $i_db_settlement_id, $i_db_comment_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_parent_comment_id, $i_db_post_id, '$s_db_text')");
+          }
 
-            if ($o_ri['thread']['count'] > 0) {
-              foreach ($o_ri['thread']['items'] as $o_riti) {
-                $i_db_comment_id_riti = $o_riti['id'];
-                $i_db_date_riti = $o_riti['date'];
-                $i_db_from_id_riti = $o_riti['from_id'];
-                $i_db_owner_id_riti = $o_riti['owner_id'];
-                $i_db_parent_comment_id_riti = $i_db_comment_id;
-                $i_db_post_id_riti = $o_riti['post_id'];
-                $s_db_text_riti = base64_encode($o_riti['text']);
+          if ($o_ri['thread']['count'] > 0) {
+            foreach ($o_ri['thread']['items'] as $o_riti) {
+              $i_db_comment_id_riti = $o_riti['id'];
+              $i_db_date_riti = $o_riti['date'];
+              $i_db_from_id_riti = $o_riti['from_id'];
+              $i_db_owner_id_riti = $o_riti['owner_id'];
+              $i_db_parent_comment_id_riti = $i_db_comment_id;
+              $i_db_post_id_riti = $o_riti['post_id'];
+              $s_db_text_riti = base64_encode($o_riti['text']);
 
-                if (array_key_exists('attachments', $o_riti)) {
-                  $s_db_attachments_riti = base64_encode(serialize($o_riti['attachments']));
-                } else {
-                  $s_db_attachments_riti = base64_encode('');
-                }
+              if (array_key_exists('attachments', $o_riti)) {
+                $s_db_attachments_riti = base64_encode(serialize($o_riti['attachments']));
+              } else {
+                $s_db_attachments_riti = base64_encode('');
+              }
 
-                $a_db_user_data_riti = sms_user_fetch_data($i_db_from_id_riti);
-                $i_db_settlement_id_riti = $a_db_user_data_riti['settlement_id'];
+              $a_db_user_data_riti = sms_user_fetch_data($i_db_from_id_riti);
+              $i_db_settlement_id_riti = $a_db_user_data_riti['settlement_id'];
 
-                if (sms_settlement_check($i_db_settlement_id_riti)) {
-                  $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_riti', $i_db_settlement_id_riti, $i_db_comment_id_riti, $i_db_date_riti, $i_db_from_id_riti, $i_db_owner_id_riti, $i_db_parent_comment_id_riti, $i_db_post_id_riti, '$s_db_text_riti')");
-                }
+              if (sms_settlement_check($i_db_settlement_id_riti)) {
+                $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_riti', $i_db_settlement_id_riti, $i_db_comment_id_riti, $i_db_date_riti, $i_db_from_id_riti, $i_db_owner_id_riti, $i_db_parent_comment_id_riti, $i_db_post_id_riti, '$s_db_text_riti')");
               }
             }
+          }
 
-            if ($o_ri['thread']['count'] > I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT) {
-              do {
-                $b_need_for_break_nested = false;
-                $o_result_nested = sms_vk_api_wall_getcomments($a_pi['owner_id'], $a_pi['post_id'], $i_offset_nested, $i_db_comment_id);
+          if ($o_ri['thread']['count'] > I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT) {
+            do {
+              $b_need_for_break_nested = false;
+              $o_result_nested = sms_vk_api_wall_getcomments($a_pi['owner_id'], $a_pi['post_id'], $i_offset_nested, $i_db_comment_id);
 
-                if ($o_result_nested != null) {
-                  if (empty($o_result_nested['items']) || count($o_result_nested['items']) < I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT) {
-                    $b_need_for_break_nested = true;
-                  }
-
-                  foreach ($o_result_nested['items'] as $o_rin) {
-                    if (!array_key_exists('deleted', $o_rin)) {
-                      $i_db_comment_id_nested = $o_rin['id'];
-                      $i_db_date_nested = $o_rin['date'];
-                      $i_db_from_id_nested = $o_rin['from_id'];
-                      $i_db_owner_id_nested = $o_rin['owner_id'];
-                      $i_db_parent_comment_id_nested = $i_db_comment_id;
-                      $i_db_post_id_nested = $o_rin['post_id'];
-                      $s_db_text_nested = base64_encode($o_rin['text']);
-
-                      if (array_key_exists('attachments', $o_rin)) {
-                        $s_db_attachments_nested = base64_encode(serialize($o_rin['attachments']));
-                      } else {
-                        $s_db_attachments_nested = base64_encode('');
-                      }
-
-                      $a_db_user_data_nested = sms_user_fetch_data($i_db_from_id_nested);
-                      $i_db_settlement_id_nested = $a_db_user_data_nested['settlement_id'];
-
-                      if (sms_settlement_check($i_db_settlement_id_nested)) {
-                        $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_settlement_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
-                      }
-                    }
-                  }
-                } else {
-                  $b_comments_are_committed = false;
-                  sms_debug('error, wall.getcomments, nested, https://vk.com/wall' . $i_db_owner_id . '_' . $i_db_post_id);
-
-                  break;
+              if ($o_result_nested != null) {
+                if (empty($o_result_nested['items']) || count($o_result_nested['items']) < I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT) {
+                  $b_need_for_break_nested = true;
                 }
 
-                $i_offset_nested += I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT;
-              } while (!$b_need_for_break_nested);
-            }
+                foreach ($o_result_nested['items'] as $o_rin) {
+                  if (!array_key_exists('deleted', $o_rin)) {
+                    $i_db_comment_id_nested = $o_rin['id'];
+                    $i_db_date_nested = $o_rin['date'];
+                    $i_db_from_id_nested = $o_rin['from_id'];
+                    $i_db_owner_id_nested = $o_rin['owner_id'];
+                    $i_db_parent_comment_id_nested = $i_db_comment_id;
+                    $i_db_post_id_nested = $o_rin['post_id'];
+                    $s_db_text_nested = base64_encode($o_rin['text']);
+
+                    if (array_key_exists('attachments', $o_rin)) {
+                      $s_db_attachments_nested = base64_encode(serialize($o_rin['attachments']));
+                    } else {
+                      $s_db_attachments_nested = base64_encode('');
+                    }
+
+                    $a_db_user_data_nested = sms_user_fetch_data($i_db_from_id_nested);
+                    $i_db_settlement_id_nested = $a_db_user_data_nested['settlement_id'];
+
+                    if (sms_settlement_check($i_db_settlement_id_nested)) {
+                      $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_settlement_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
+                    }
+                  }
+                }
+              } else {
+                $b_comments_are_committed = false;
+                sms_debug('error, wall.getcomments, nested');
+
+                break;
+              }
+
+              $i_offset_nested += I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT;
+            } while (!$b_need_for_break_nested);
           }
         }
       } else {
