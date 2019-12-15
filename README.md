@@ -89,6 +89,14 @@ echo "${D}from_id|FROM_ID_3" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_1" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_2" >> private/ignored_items.txt
 echo "${D}owner_id|OWNER_ID_3" >> private/ignored_items.txt
+
+echo "${D}photo_comment|PHOTO_OWNER_ID_1|PHOTO_ID_1|PHOTO_COMMENT_ID_1" >> private/ignored_items.txt
+echo "${D}photo_comment|PHOTO_OWNER_ID_2|PHOTO_ID_2|PHOTO_COMMENT_ID_2" >> private/ignored_items.txt
+echo "${D}photo_comment|PHOTO_OWNER_ID_3|PHOTO_ID_3|PHOTO_COMMENT_ID_3" >> private/ignored_items.txt
+
+echo "${D}video_comment|VIDEO_OWNER_ID_1|VIDEO_ID_1|VIDEO_COMMENT_ID_1" >> private/ignored_items.txt
+echo "${D}video_comment|VIDEO_OWNER_ID_2|VIDEO_ID_2|VIDEO_COMMENT_ID_2" >> private/ignored_items.txt
+echo "${D}video_comment|VIDEO_OWNER_ID_3|VIDEO_ID_3|VIDEO_COMMENT_ID_3" >> private/ignored_items.txt
 ```
 
 ### Weekly steps
