@@ -160,6 +160,14 @@ function sms_db_analyze_data_wall_get() {
   }
 }
 
+function sms_db_analyze_data_wall_get_photos_comments() {
+  //todo
+}
+
+function sms_db_analyze_data_wall_get_videos_comments() {
+  //todo
+}
+
 function sms_db_analyze_data_wall_getcomments() {
   global $a_default_settlement_enforced;
   global $a_from_id_enforced;
@@ -327,6 +335,14 @@ function sms_db_delete_obsolete_comments() {
   $o_sqlite->exec("DELETE FROM wall_getcomments WHERE date < $i_current_date_limit");
 }
 
+function sms_db_delete_obsolete_photos() {
+  // TODO
+}
+
+function sms_db_delete_obsolete_photos_comments() {
+  // TODO
+}
+
 function sms_db_delete_obsolete_posts() {
   global $i_timestamp;
   global $o_sqlite;
@@ -334,6 +350,14 @@ function sms_db_delete_obsolete_posts() {
   $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET;
 
   $o_sqlite->exec("DELETE FROM wall_get WHERE date < $i_current_date_limit");
+}
+
+function sms_db_delete_obsolete_videos() {
+  // TODO
+}
+
+function sms_db_delete_obsolete_videos_comments() {
+  // TODO
 }
 
 function sms_db_get_rows_count($o_query_result) {
@@ -499,6 +523,22 @@ function sms_db_posts_fetch_comments() {
       $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_pi_attachments', 1, $i_pi_settlement_id, $i_pi_date, $i_pi_from_id, $i_pi_owner_id, $i_pi_post_id, '$s_pi_text')");
     }
   }
+}
+
+function sms_db_posts_fetch_photos_comments() {
+  //todo
+}
+
+function sms_db_posts_fetch_videos_comments() {
+  //todo
+}
+
+function sms_db_posts_obtain_photos() {
+  //todo
+}
+
+function sms_db_posts_obtain_videos() {
+  //todo
 }
 
 function sms_db_vacuum() {

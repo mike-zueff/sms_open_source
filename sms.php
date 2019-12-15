@@ -12,11 +12,21 @@ $a_getopt = getopt('f');
 if (array_key_exists('f', $a_getopt)) {
   sms_db_delete_obsolete_posts();
   sms_db_delete_obsolete_comments();
+  sms_db_delete_obsolete_photos();
+  sms_db_delete_obsolete_photos_comments();
+  sms_db_delete_obsolete_videos();
+  sms_db_delete_obsolete_videos_comments();
   sms_watched_owners_wall_get();
   sms_db_posts_fetch_comments();
+  sms_db_posts_obtain_photos();
+  sms_db_posts_fetch_photos_comments();
+  sms_db_posts_obtain_videos();
+  sms_db_posts_fetch_videos_comments();
   sms_db_vacuum();
   sms_db_perform_backup();
 } else {
   sms_db_analyze_data_wall_get();
   sms_db_analyze_data_wall_getcomments();
+  sms_db_analyze_data_wall_get_photos_comments();
+  sms_db_analyze_data_wall_get_videos_comments();
 }
