@@ -957,6 +957,7 @@ function sms_db_posts_fetch_comments() {
 
     if ($b_comments_are_committed) {
       $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_pi_attachments', 1, $i_pi_settlement_id, $i_pi_date, $i_pi_from_id, $i_pi_owner_id, $i_pi_post_id, '$s_pi_text')");
+      sms_debug('comments are committed successfully');
     }
   }
 }
