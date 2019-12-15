@@ -4,9 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 const B_DEBUG_ENABLED = true;
 const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 9;
-const I_DATE_LIMIT_WALL_GET_PHOTOS = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GET_PHOTOS_COMMENTS = 60 * 60 * 24 * 9;
-const I_DATE_LIMIT_WALL_GET_VIDEOS = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GET_VIDEOS_COMMENTS = 60 * 60 * 24 * 9;
 const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
@@ -342,12 +340,9 @@ function sms_db_delete_obsolete_comments() {
 }
 
 function sms_db_delete_obsolete_photos() {
-  global $i_timestamp;
   global $o_sqlite;
 
-  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET_PHOTOS;
-
-  $o_sqlite->exec("DELETE FROM wall_get_photos WHERE date < $i_current_date_limit");
+  $o_sqlite->exec('DELETE FROM wall_get_photos');
 }
 
 function sms_db_delete_obsolete_photos_comments() {
@@ -369,12 +364,9 @@ function sms_db_delete_obsolete_posts() {
 }
 
 function sms_db_delete_obsolete_videos() {
-  global $i_timestamp;
   global $o_sqlite;
 
-  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET_VIDEOS;
-
-  $o_sqlite->exec("DELETE FROM wall_get_videos WHERE date < $i_current_date_limit");
+  $o_sqlite->exec('DELETE FROM wall_get_videos');
 }
 
 function sms_db_delete_obsolete_videos_comments() {
@@ -561,6 +553,7 @@ function sms_db_posts_fetch_videos_comments() {
 
 function sms_db_posts_obtain_photos() {
   //===================================================
+  exit();
   global $a_watched_owners;
   global $i_timestamp;
   global $o_sqlite;
@@ -631,7 +624,7 @@ function sms_db_posts_obtain_videos() {
 function sms_db_vacuum() {
   global $o_sqlite;
 
-  $o_sqlite->exec("VACUUM");
+  $o_sqlite->exec('VACUUM');
 }
 
 function sms_debug($s_message) {

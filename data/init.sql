@@ -19,13 +19,11 @@ CREATE TABLE IF NOT EXISTS wall_get (
 
 CREATE TABLE IF NOT EXISTS wall_get_photos (
   access_key text,
-  comments_are_committed integer,
-  date integer,
   owner_id integer,
   photo_id integer,
   photo_owner_id integer,
   post_id integer,
-  unique(owner_id,post_id,photo_owner_id,photo_id)
+  unique(photo_owner_id,photo_id)
 );
 
 CREATE TABLE IF NOT EXISTS wall_get_photos_comments (
@@ -40,18 +38,16 @@ CREATE TABLE IF NOT EXISTS wall_get_photos_comments (
   post_id integer,
   settlement_id integer,
   text text,
-  unique(owner_id,post_id,photo_owner_id,photo_id,comment_id)
+  unique(photo_owner_id,photo_id,comment_id)
 );
 
 CREATE TABLE IF NOT EXISTS wall_get_videos (
   access_key text,
-  comments_are_committed integer,
-  date integer,
   owner_id integer,
   video_id integer,
   video_owner_id integer,
   post_id integer,
-  unique(owner_id,post_id,video_owner_id,video_id)
+  unique(video_owner_id,video_id)
 );
 
 CREATE TABLE IF NOT EXISTS wall_get_videos_comments (
@@ -66,7 +62,7 @@ CREATE TABLE IF NOT EXISTS wall_get_videos_comments (
   post_id integer,
   settlement_id integer,
   text text,
-  unique(owner_id,post_id,video_owner_id,video_id,comment_id)
+  unique(video_owner_id,video_id,comment_id)
 );
 
 CREATE TABLE IF NOT EXISTS wall_getcomments (
