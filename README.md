@@ -45,6 +45,10 @@ echo "USER_1" >> private/owner_id_enforced.txt
 echo "USER_2" >> private/owner_id_enforced.txt
 echo "USER_3" >> private/owner_id_enforced.txt
 
+echo "USER1" > private/default_settlement_enforced.txt
+echo "USER2" >> private/default_settlement_enforced.txt
+echo "USER3" >> private/default_settlement_enforced.txt
+
 echo "/PATTERN_1/iu" > private/patterns.txt
 echo "/PATTERN_2/iu" >> private/patterns.txt
 echo "/PATTERN_3/iu" >> private/patterns.txt
