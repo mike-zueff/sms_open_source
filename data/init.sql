@@ -17,15 +17,6 @@ CREATE TABLE IF NOT EXISTS wall_get (
   unique(owner_id,post_id)
 );
 
-CREATE TABLE IF NOT EXISTS wall_get_photos (
-  access_key text,
-  owner_id integer,
-  photo_id integer,
-  photo_owner_id integer,
-  post_id integer,
-  unique(photo_owner_id,photo_id)
-);
-
 CREATE TABLE IF NOT EXISTS wall_get_photos_comments (
   access_key text,
   attachments text,
@@ -39,15 +30,6 @@ CREATE TABLE IF NOT EXISTS wall_get_photos_comments (
   settlement_id integer,
   text text,
   unique(photo_owner_id,photo_id,comment_id)
-);
-
-CREATE TABLE IF NOT EXISTS wall_get_videos (
-  access_key text,
-  owner_id integer,
-  video_id integer,
-  video_owner_id integer,
-  post_id integer,
-  unique(video_owner_id,video_id)
 );
 
 CREATE TABLE IF NOT EXISTS wall_get_videos_comments (

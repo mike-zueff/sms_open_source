@@ -339,12 +339,6 @@ function sms_db_delete_obsolete_comments() {
   $o_sqlite->exec("DELETE FROM wall_getcomments WHERE date < $i_current_date_limit");
 }
 
-function sms_db_delete_obsolete_photos() {
-  global $o_sqlite;
-
-  $o_sqlite->exec('DELETE FROM wall_get_photos');
-}
-
 function sms_db_delete_obsolete_photos_comments() {
   global $i_timestamp;
   global $o_sqlite;
@@ -361,12 +355,6 @@ function sms_db_delete_obsolete_posts() {
   $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET;
 
   $o_sqlite->exec("DELETE FROM wall_get WHERE date < $i_current_date_limit");
-}
-
-function sms_db_delete_obsolete_videos() {
-  global $o_sqlite;
-
-  $o_sqlite->exec('DELETE FROM wall_get_videos');
 }
 
 function sms_db_delete_obsolete_videos_comments() {
@@ -541,84 +529,6 @@ function sms_db_posts_fetch_comments() {
       $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_pi_attachments', 1, $i_pi_settlement_id, $i_pi_date, $i_pi_from_id, $i_pi_owner_id, $i_pi_post_id, '$s_pi_text')");
     }
   }
-}
-
-function sms_db_posts_fetch_photos_comments() {
-  //todo
-}
-
-function sms_db_posts_fetch_videos_comments() {
-  //todo
-}
-
-function sms_db_posts_obtain_photos() {
-  //===================================================
-  exit();
-  global $a_watched_owners;
-  global $i_timestamp;
-  global $o_sqlite;
-
-
-  foreach ($a_watched_owners as $s_wo) {
-    $i_offset = 0;
-
-    do {
-      $b_need_for_break = false;
-      $o_result = sms_vk_api_wall_get($s_wo, $i_offset);
-
-      if ($o_result != null) {
-        foreach ($o_result['items'] as $o_ri) {
-          $i_db_date = $o_ri['date'];
-          $i_db_from_id = $o_ri['from_id'];
-          $i_db_owner_id = $o_ri['owner_id'];
-          $i_db_post_id = $o_ri['id'];
-          $s_db_text = base64_encode($o_ri['text']);
-
-          if (array_key_exists('attachments', $o_ri)) {
-            $s_db_attachments = base64_encode(serialize($o_ri['attachments']));
-          } else {
-            $s_db_attachments = base64_encode('');
-          }
-
-          if (array_key_exists('is_pinned', $o_ri)) {
-            if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
-              continue;
-            }
-          } else {
-            if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
-              continue;
-            }
-
-            if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
-              $b_need_for_break = true;
-
-              break;
-            }
-          }
-
-          $a_db_user_data = sms_user_fetch_data($i_db_from_id);
-          $i_db_settlement_id = $a_db_user_data['settlement_id'];
-
-          $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', 0, $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
-        }
-      } else {
-        sms_debug('error, wall.get, ' . $i_offset . ', https://vk.com/wall' . $s_wo . '?own=1');
-
-        break;
-      }
-
-      $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
-
-      if ($b_need_for_break || empty($o_result['items']) || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_DATE_LIMIT_WALL_GET) {
-        break;
-      }
-    } while (true);
-  }
-  //===================================================
-}
-
-function sms_db_posts_obtain_videos() {
-  //todo
 }
 
 function sms_db_vacuum() {
