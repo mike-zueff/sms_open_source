@@ -4,6 +4,10 @@ require __DIR__ . '/../vendor/autoload.php';
 const B_DEBUG_ENABLED = true;
 const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 9;
+const I_DATE_LIMIT_WALL_GET_PHOTOS = 60 * 60 * 24 * 9;
+const I_DATE_LIMIT_WALL_GET_PHOTOS_COMMENTS = 60 * 60 * 24 * 9;
+const I_DATE_LIMIT_WALL_GET_VIDEOS = 60 * 60 * 24 * 9;
+const I_DATE_LIMIT_WALL_GET_VIDEOS_COMMENTS = 60 * 60 * 24 * 9;
 const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
 const I_USLEEP_TIME = 340 * 1000;
@@ -336,11 +340,21 @@ function sms_db_delete_obsolete_comments() {
 }
 
 function sms_db_delete_obsolete_photos() {
-  // TODO
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET_PHOTOS;
+
+  $o_sqlite->exec("DELETE FROM wall_get_photos WHERE date < $i_current_date_limit");
 }
 
 function sms_db_delete_obsolete_photos_comments() {
-  // TODO
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET_PHOTOS_COMMENTS;
+
+  $o_sqlite->exec("DELETE FROM wall_get_photos_comments WHERE date < $i_current_date_limit");
 }
 
 function sms_db_delete_obsolete_posts() {
@@ -353,11 +367,21 @@ function sms_db_delete_obsolete_posts() {
 }
 
 function sms_db_delete_obsolete_videos() {
-  // TODO
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET_VIDEOS;
+
+  $o_sqlite->exec("DELETE FROM wall_get_videos WHERE date < $i_current_date_limit");
 }
 
 function sms_db_delete_obsolete_videos_comments() {
-  // TODO
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET_VIDEOS_COMMENTS;
+
+  $o_sqlite->exec("DELETE FROM wall_get_videos_comments WHERE date < $i_current_date_limit");
 }
 
 function sms_db_get_rows_count($o_query_result) {
