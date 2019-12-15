@@ -822,7 +822,7 @@ function sms_db_posts_fetch_comments() {
             } while (!$b_need_for_break_nested);
           }
 
-          if (!$b_att_processed) {
+          if (!$b_att_processed && $s_pi_attachments != '') {
             $o_att_unserialized = unserialize(base64_decode($s_pi_attachments));
 
             foreach ($o_att_unserialized as $a_riai) {
