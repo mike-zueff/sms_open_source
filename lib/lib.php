@@ -11,6 +11,8 @@ const I_DATE_LIMIT_WALL_GET_VIDEOS_COMMENTS = 60 * 60 * 24 * 9;
 const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
 const I_USLEEP_TIME = 340 * 1000;
+const I_VK_API_PHOTOS_GETCOMMENTS_COUNT_DEFAULT = 100;
+const I_VK_API_VIDEO_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT = 10;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
@@ -524,7 +526,7 @@ function sms_db_posts_fetch_comments() {
                 }
               } else {
                 $b_comments_are_committed = false;
-                sms_debug('error, wall.getcomments, nested');
+                sms_debug('error, wall.getComments, nested');
 
                 break;
               }
@@ -535,7 +537,7 @@ function sms_db_posts_fetch_comments() {
         }
       } else {
         $b_comments_are_committed = false;
-        sms_debug('error, wall.getcomments, https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
+        sms_debug('error, wall.getComments, https://vk.com/wall' . $a_pi['owner_id'] . '_' . $a_pi['post_id']);
 
         break;
       }
@@ -558,7 +560,68 @@ function sms_db_posts_fetch_videos_comments() {
 }
 
 function sms_db_posts_obtain_photos() {
-  //todo
+  //===================================================
+  global $a_watched_owners;
+  global $i_timestamp;
+  global $o_sqlite;
+
+
+  foreach ($a_watched_owners as $s_wo) {
+    $i_offset = 0;
+
+    do {
+      $b_need_for_break = false;
+      $o_result = sms_vk_api_wall_get($s_wo, $i_offset);
+
+      if ($o_result != null) {
+        foreach ($o_result['items'] as $o_ri) {
+          $i_db_date = $o_ri['date'];
+          $i_db_from_id = $o_ri['from_id'];
+          $i_db_owner_id = $o_ri['owner_id'];
+          $i_db_post_id = $o_ri['id'];
+          $s_db_text = base64_encode($o_ri['text']);
+
+          if (array_key_exists('attachments', $o_ri)) {
+            $s_db_attachments = base64_encode(serialize($o_ri['attachments']));
+          } else {
+            $s_db_attachments = base64_encode('');
+          }
+
+          if (array_key_exists('is_pinned', $o_ri)) {
+            if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
+              continue;
+            }
+          } else {
+            if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
+              continue;
+            }
+
+            if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
+              $b_need_for_break = true;
+
+              break;
+            }
+          }
+
+          $a_db_user_data = sms_user_fetch_data($i_db_from_id);
+          $i_db_settlement_id = $a_db_user_data['settlement_id'];
+
+          $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', 0, $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
+        }
+      } else {
+        sms_debug('error, wall.get, ' . $i_offset . ', https://vk.com/wall' . $s_wo . '?own=1');
+
+        break;
+      }
+
+      $i_offset += I_VK_API_WALL_GET_COUNT_DEFAULT;
+
+      if ($b_need_for_break || empty($o_result['items']) || count($o_result['items']) == 1 || $i_timestamp > $o_result['items'][1]['date'] + I_DATE_LIMIT_WALL_GET) {
+        break;
+      }
+    } while (true);
+  }
+  //===================================================
 }
 
 function sms_db_posts_obtain_videos() {
@@ -689,7 +752,7 @@ function sms_user_fetch_data($i_user_id) {
   }
 
   if ($i_user_id > 0) {
-    $o_result = sms_vk_api_user_get($i_user_id, 'city');
+    $o_result = sms_vk_api_users_get($i_user_id, 'city');
 
     if ($o_result != null) {
       $b_need_for_commit = true;
@@ -713,7 +776,43 @@ function sms_user_fetch_data($i_user_id) {
   return $a_db_user_data;
 }
 
-function sms_vk_api_user_get($i_user_id, $s_fields) {
+function sms_vk_api_photos_getcomments($i_owner_id, $i_post_id, $i_photo_owner_id, $i_photo_id, $i_offset, $s_access_key) {
+  global $o_vk_api_client;
+  global $s_vk_api_token;
+
+  usleep(I_USLEEP_TIME);
+
+  if ($s_access_key == '') {
+    sms_debug('photos.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_photo_owner_id . ' | ' . $i_photo_id . ' | ' . $i_offset);
+    sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id . '?z=photo' . $i_photo_owner_id . '_' . $i_photo_id);
+  } else {
+    sms_debug('photos.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_photo_owner_id . ' | ' . $i_photo_id . ' | ' . $i_offset . ' | ' . $s_access_key);
+    sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id . '?z=photo' . $i_photo_owner_id . '_' . $i_photo_id . '/' . $s_access_key);
+  }
+
+  $a_get_photos_comments = [
+    'count' => I_VK_API_PHOTOS_GETCOMMENTS_COUNT_DEFAULT,
+    'offset' => $i_offset,
+    'owner_id' => $i_photo_owner_id,
+    'photo_id' => $i_photo_id,
+    'sort' => 'asc',
+  ];
+
+  if ($s_access_key != '') {
+    $a_get_photos_comments['access_key'] = $s_access_key;
+  }
+
+  try {
+    $o_response = $o_vk_api_client->photos()->getComments($s_vk_api_token, $a_get_photos_comments);
+    sms_debug('done');
+
+    return $o_response;
+  } catch (Exception $e) {
+    return null;
+  }
+}
+
+function sms_vk_api_users_get($i_user_id, $s_fields) {
   global $o_vk_api_client;
   global $s_vk_api_token;
 
@@ -731,6 +830,42 @@ function sms_vk_api_user_get($i_user_id, $s_fields) {
       'user_ids' => $i_user_id,
     ]);
 
+    sms_debug('done');
+
+    return $o_response;
+  } catch (Exception $e) {
+    return null;
+  }
+}
+
+function sms_vk_api_video_getcomments($i_owner_id, $i_post_id, $i_video_owner_id, $i_video_id, $i_offset, $s_access_key) {
+  global $o_vk_api_client;
+  global $s_vk_api_token;
+
+  usleep(I_USLEEP_TIME);
+
+  if ($s_access_key == '') {
+    sms_debug('video.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_video_owner_id . ' | ' . $i_video_id . ' | ' . $i_offset);
+    sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id . '?z=video' . $i_video_owner_id . '_' . $i_video_id);
+  } else {
+    sms_debug('video.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_video_owner_id . ' | ' . $i_video_id . ' | ' . $i_offset . ' | ' . $s_access_key);
+    sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id . '?z=video' . $i_video_owner_id . '_' . $i_video_id . '/' . $s_access_key);
+  }
+
+  $a_get_video_comments = [
+    'count' => I_VK_API_VIDEO_GETCOMMENTS_COUNT_DEFAULT,
+    'offset' => $i_offset,
+    'owner_id' => $i_video_owner_id,
+    'sort' => 'asc',
+    'video_id' => $i_video_id,
+  ];
+
+  if ($s_access_key != '') {
+    $a_get_video_comments['access_key'] = $s_access_key;
+  }
+
+  try {
+    $o_response = $o_vk_api_client->video()->getComments($s_vk_api_token, $a_get_video_comments);
     sms_debug('done');
 
     return $o_response;
@@ -767,7 +902,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
   global $s_vk_api_token;
 
   usleep(I_USLEEP_TIME);
-  sms_debug('wall.getcomments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
+  sms_debug('wall.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
 
   if ($i_comment_id == I_NULL_VALUE) {
     sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id);
