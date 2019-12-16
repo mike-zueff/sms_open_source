@@ -8,7 +8,7 @@ error_reporting(E_ALL);
 require __DIR__ . '/lib/lib.php';
 
 $a_getopt_f = getopt('f');
-$a_getopt_v = getopt('v');
+$a_getopt_r = getopt('r');
 
 if (array_key_exists('f', $a_getopt_f)) {
   sms_db_delete_obsolete_posts();
@@ -19,7 +19,7 @@ if (array_key_exists('f', $a_getopt_f)) {
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
   sms_db_perform_backup();
-} else if (array_key_exists('v', $a_getopt_v)) {
+} else if (array_key_exists('r', $a_getopt_r)) {
   sms_db_vacuum();
 } else {
   sms_db_analyze_data_wall_get();

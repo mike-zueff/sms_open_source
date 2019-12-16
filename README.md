@@ -113,7 +113,7 @@ clear; ./sms.php
 
 ### Corrupted database repair
 ```
-./sms.php -v
+./sms.php -r
 ```
 
 ## Credits
