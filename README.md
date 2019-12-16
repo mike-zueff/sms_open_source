@@ -111,6 +111,11 @@ vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complain
 clear; ./sms.php
 ```
 
+### Corrupted database repair
+```
+./sms.php -v
+```
+
 ## Credits
 Author: Mike Zueff
 
