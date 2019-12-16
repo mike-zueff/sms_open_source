@@ -886,7 +886,7 @@ function sms_db_posts_fetch_comments() {
                 } while (!$b_need_for_break_att);
               }
 
-              if ($a_riai['type'] == 'video') {
+              if ($a_riai['type'] == 'video' && !array_key_exists('live', $a_riai['video'])) {
                 $i_att_video_id = $a_riai['video']['id'];
                 $i_att_video_owner_id = $a_riai['video']['owner_id'];
 
