@@ -21,18 +21,6 @@ const S_TERMINAL_RED = "\e[91m";
 const S_TERMINAL_RESET = "\e[0m";
 const S_TERMINAL_YELLOW = "\e[93m";
 
-function sms_data_attachments_count_photos($a_attachments) {
-  $i_photos_count = 0;
-
-  foreach ($a_attachments as $a_a) {
-    if ($a_a['type'] == 'photo') {
-      ++$i_photos_count;
-    }
-  }
-
-  return $i_photos_count;
-}
-
 function sms_data_parse_from_id_enforced() {
   global $a_default_settlement_enforced;
   global $a_watched_owners;
@@ -831,7 +819,7 @@ function sms_db_posts_fetch_comments() {
               $i_att_post_id = $i_pi_post_id;
               $i_offset_att = 0;
 
-              if ($a_riai['type'] == 'photo' && sms_data_attachments_count_photos($o_att_unserialized) > 1) {
+              if ($a_riai['type'] == 'photo') {
                 $i_att_photo_id = $a_riai['photo']['id'];
                 $i_att_photo_owner_id = $a_riai['photo']['owner_id'];
 
