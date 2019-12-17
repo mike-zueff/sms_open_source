@@ -689,6 +689,8 @@ function sms_db_posts_fetch_comments() {
   while ($a_pi = $o_db_data_posts->fetchArray()) {
     $b_att_processed = false;
     $b_comments_are_committed = true;
+    $b_first_comment_obtained = false;
+    $i_first_comment_date = I_NULL_VALUE;
     $i_offset = 0;
     $i_pi_date = $a_pi['date'];
     $i_pi_from_id = $a_pi['from_id'];
@@ -717,6 +719,11 @@ function sms_db_posts_fetch_comments() {
         }
 
         foreach ($o_result['items'] as $o_ri) {
+          if (!$b_first_comment_obtained) {
+            $b_first_comment_obtained = true;
+            $i_first_comment_date = $o_ri['date'];
+          }
+
           $i_db_comment_id = $o_ri['id'];
           $i_db_parent_comment_id = I_NULL_VALUE;
           $i_offset_nested = I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT;
@@ -814,14 +821,15 @@ function sms_db_posts_fetch_comments() {
             $o_att_unserialized = unserialize(base64_decode($s_pi_attachments));
 
             foreach ($o_att_unserialized as $a_riai) {
-              $i_att_date = $i_pi_date;
               $i_att_owner_id = $i_pi_owner_id;
               $i_att_post_id = $i_pi_post_id;
               $i_offset_att = 0;
 
               if ($a_riai['type'] == 'photo') {
+                $b_first_photo_comment_obtained = false;
                 $i_att_photo_id = $a_riai['photo']['id'];
                 $i_att_photo_owner_id = $a_riai['photo']['owner_id'];
+                $i_first_photo_comment_date = I_NULL_VALUE;
 
                 if (array_key_exists('access_key', $a_riai['photo'])) {
                   $s_att_access_key = $a_riai['photo']['access_key'];
@@ -839,8 +847,20 @@ function sms_db_posts_fetch_comments() {
                     }
 
                     foreach ($o_result_att['items'] as $o_ri_att) {
+                      if (!$b_first_photo_comment_obtained) {
+                        $b_first_photo_comment_obtained = true;
+                        $i_first_photo_comment_date = $o_ri_att['date'];
+                      }
+
+                      if ($i_first_comment_date == $i_first_photo_comment_date) {
+                        $b_need_for_break_att = true;
+
+                        break;
+                      }
+
                       if (!array_key_exists('deleted', $o_ri_att)) {
                         $i_att_comment_id = $o_ri_att['id'];
+                        $i_att_date = $o_ri_att['date'];
                         $i_att_from_id = $o_ri_att['from_id'];
                         $s_att_text = base64_encode($o_ri_att['text']);
 
@@ -875,8 +895,10 @@ function sms_db_posts_fetch_comments() {
               }
 
               if ($a_riai['type'] == 'video' && !array_key_exists('live', $a_riai['video'])) {
+                $b_first_video_comment_obtained = false;
                 $i_att_video_id = $a_riai['video']['id'];
                 $i_att_video_owner_id = $a_riai['video']['owner_id'];
+                $i_first_video_comment_date = I_NULL_VALUE;
 
                 if (array_key_exists('access_key', $a_riai['video'])) {
                   $s_att_access_key = $a_riai['video']['access_key'];
@@ -894,8 +916,20 @@ function sms_db_posts_fetch_comments() {
                     }
 
                     foreach ($o_result_att['items'] as $o_ri_att) {
+                      if (!$b_first_video_comment_obtained) {
+                        $b_first_video_comment_obtained = true;
+                        $i_first_video_comment_date = $o_ri_att['date'];
+                      }
+
+                      if ($i_first_comment_date == $i_first_video_comment_date) {
+                        $b_need_for_break_att = true;
+
+                        break;
+                      }
+
                       if (!array_key_exists('deleted', $o_ri_att)) {
                         $i_att_comment_id = $o_ri_att['id'];
+                        $i_att_date = $o_ri_att['date'];
                         $i_att_from_id = $o_ri_att['from_id'];
                         $s_att_text = base64_encode($o_ri_att['text']);
 
