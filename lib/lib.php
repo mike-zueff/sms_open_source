@@ -44,6 +44,7 @@ function sms_data_parse_from_id_enforced() {
 
 function sms_db_analyze_data_wall_get() {
   global $a_default_settlement_enforced;
+  global $a_from_id_enforced;
   global $a_ignored_items;
   global $a_owner_id_enforced;
   global $a_patterns;
@@ -117,6 +118,11 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_pi['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
+
+        if (in_array($a_pi['from_id'], $a_from_id_enforced) && base64_decode($a_pi['text']) != '') {
+          $b_need_for_log = true;
+          $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
+        }
 
         if (in_array($a_pi['owner_id'], $a_owner_id_enforced)) {
           $b_need_for_log = true;
