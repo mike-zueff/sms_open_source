@@ -10,6 +10,7 @@ const I_E_TOO_MANY_ACTIONS = 9;
 const I_E_TOO_MANY_REQUESTS_PER_SECOND = 6;
 const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
+const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_PHOTOS_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_VIDEO_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
@@ -1269,6 +1270,7 @@ function sms_vk_api_photos_getcomments($i_owner_id, $i_post_id, $i_photo_owner_i
         return null;
       } else {
         sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
       }
     }
   } while (true);
@@ -1301,6 +1303,7 @@ function sms_vk_api_users_get($i_user_id, $s_fields) {
         return null;
       } else {
         sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
       }
     }
   } while (true);
@@ -1342,6 +1345,7 @@ function sms_vk_api_video_getcomments($i_owner_id, $i_post_id, $i_video_owner_id
         return null;
       } else {
         sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
       }
     }
   } while (true);
@@ -1371,6 +1375,7 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
         return null;
       } else {
         sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
       }
     }
   } while (true);
@@ -1414,6 +1419,7 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
         return null;
       } else {
         sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
       }
     }
   } while (true);
