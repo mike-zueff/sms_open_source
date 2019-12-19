@@ -116,6 +116,11 @@ clear; ./sms.php
 ./sms.php -r
 ```
 
+### Continue job after power-off
+```
+./sms.php -c
+```
+
 ## Credits
 Author: Mike Zueff
 

@@ -737,12 +737,9 @@ function sms_db_delete_obsolete_photos_comments() {
 }
 
 function sms_db_delete_obsolete_posts() {
-  global $i_timestamp;
   global $o_sqlite;
 
-  $i_current_date_limit = $i_timestamp - I_DATE_LIMIT_WALL_GET;
-
-  $o_sqlite->exec("DELETE FROM wall_get WHERE date < $i_current_date_limit");
+  $o_sqlite->exec('DELETE FROM wall_get');
 }
 
 function sms_db_delete_obsolete_videos_comments() {
