@@ -6,9 +6,10 @@ const I_DATE_LIMIT_WALL_GET = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GETCOMMENTS = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GET_PHOTOS_COMMENTS = 60 * 60 * 24 * 9;
 const I_DATE_LIMIT_WALL_GET_VIDEOS_COMMENTS = 60 * 60 * 24 * 9;
+const I_E_TOO_MANY_ACTIONS = 9;
+const I_E_TOO_MANY_REQUESTS_PER_SECOND = 6;
 const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
-const I_USLEEP_TIME = 340 * 1000;
 const I_VK_API_PHOTOS_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_VIDEO_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
@@ -38,6 +39,15 @@ function sms_data_parse_from_id_enforced() {
       array_push($a_result, $s_dsi);
     }
   }
+
+  return $a_result;
+}
+
+function sms_data_prepare_exceptions() {
+  $a_result = [];
+
+  array_push($a_result, I_E_TOO_MANY_ACTIONS);
+  array_push($a_result, I_E_TOO_MANY_REQUESTS_PER_SECOND);
 
   return $a_result;
 }
@@ -1224,10 +1234,9 @@ function sms_user_fetch_data($i_user_id) {
 }
 
 function sms_vk_api_photos_getcomments($i_owner_id, $i_post_id, $i_photo_owner_id, $i_photo_id, $i_offset, $s_access_key) {
+  global $a_vk_api_exceptions;
   global $o_vk_api_client;
   global $s_vk_api_token;
-
-  usleep(I_USLEEP_TIME);
 
   if ($s_access_key == '') {
     sms_debug('photos.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_photo_owner_id . ' | ' . $i_photo_id . ' | ' . $i_offset);
@@ -1249,17 +1258,24 @@ function sms_vk_api_photos_getcomments($i_owner_id, $i_post_id, $i_photo_owner_i
     $a_get_photos_comments['access_key'] = $s_access_key;
   }
 
-  try {
-    $o_response = $o_vk_api_client->photos()->getComments($s_vk_api_token, $a_get_photos_comments);
-    sms_debug('done');
+  do {
+    try {
+      $o_response = $o_vk_api_client->photos()->getComments($s_vk_api_token, $a_get_photos_comments);
+      sms_debug('done');
 
-    return $o_response;
-  } catch (Exception $e) {
-    return null;
-  }
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+      }
+    }
+  } while (true);
 }
 
 function sms_vk_api_users_get($i_user_id, $s_fields) {
+  global $a_vk_api_exceptions;
   global $o_vk_api_client;
   global $s_vk_api_token;
 
@@ -1267,29 +1283,33 @@ function sms_vk_api_users_get($i_user_id, $s_fields) {
     return null;
   }
 
-  usleep(I_USLEEP_TIME);
   sms_debug('user.get | ' . $i_user_id . ' | ' . $s_fields);
   sms_debug('https://vk.com/id' . $i_user_id);
 
-  try {
-    $o_response = $o_vk_api_client->users()->get($s_vk_api_token, [
-      'fields' => $s_fields,
-      'user_ids' => $i_user_id,
-    ]);
+  do {
+    try {
+      $o_response = $o_vk_api_client->users()->get($s_vk_api_token, [
+        'fields' => $s_fields,
+        'user_ids' => $i_user_id,
+      ]);
 
-    sms_debug('done');
+      sms_debug('done');
 
-    return $o_response;
-  } catch (Exception $e) {
-    return null;
-  }
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+      }
+    }
+  } while (true);
 }
 
 function sms_vk_api_video_getcomments($i_owner_id, $i_post_id, $i_video_owner_id, $i_video_id, $i_offset, $s_access_key) {
+  global $a_vk_api_exceptions;
   global $o_vk_api_client;
   global $s_vk_api_token;
-
-  usleep(I_USLEEP_TIME);
 
   if ($s_access_key == '') {
     sms_debug('video.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_video_owner_id . ' | ' . $i_video_id . ' | ' . $i_offset);
@@ -1311,44 +1331,56 @@ function sms_vk_api_video_getcomments($i_owner_id, $i_post_id, $i_video_owner_id
     $a_get_video_comments['access_key'] = $s_access_key;
   }
 
-  try {
-    $o_response = $o_vk_api_client->video()->getComments($s_vk_api_token, $a_get_video_comments);
-    sms_debug('done');
+  do {
+    try {
+      $o_response = $o_vk_api_client->video()->getComments($s_vk_api_token, $a_get_video_comments);
+      sms_debug('done');
 
-    return $o_response;
-  } catch (Exception $e) {
-    return null;
-  }
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+      }
+    }
+  } while (true);
 }
 
 function sms_vk_api_wall_get($i_owner_id, $i_offset) {
+  global $a_vk_api_exceptions;
   global $o_vk_api_client;
   global $s_vk_api_token;
 
-  usleep(I_USLEEP_TIME);
   sms_debug('wall.get | ' . $i_owner_id . ' | ' . $i_offset);
   sms_debug('https://vk.com/wall' . $i_owner_id . '?own=1');
 
-  try {
-    $o_response = $o_vk_api_client->wall()->get($s_vk_api_token, array(
-      'count' => I_VK_API_WALL_GET_COUNT_DEFAULT,
-      'offset' => $i_offset,
-      'owner_id' => $i_owner_id,
-    ));
+  do {
+    try {
+      $o_response = $o_vk_api_client->wall()->get($s_vk_api_token, array(
+        'count' => I_VK_API_WALL_GET_COUNT_DEFAULT,
+        'offset' => $i_offset,
+        'owner_id' => $i_owner_id,
+      ));
 
-    sms_debug('done');
+      sms_debug('done');
 
-    return $o_response;
-  } catch (Exception $e) {
-    return null;
-  }
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+      }
+    }
+  } while (true);
 }
 
 function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comment_id) {
+  global $a_vk_api_exceptions;
   global $o_vk_api_client;
   global $s_vk_api_token;
 
-  usleep(I_USLEEP_TIME);
   sms_debug('wall.getComments | ' . $i_owner_id . ' | ' . $i_post_id . ' | ' . $i_offset . ' | ' . $i_comment_id);
 
   if ($i_comment_id == I_NULL_VALUE) {
@@ -1371,14 +1403,20 @@ function sms_vk_api_wall_getcomments($i_owner_id, $i_post_id, $i_offset, $i_comm
     $a_getcomments['comment_id'] = $i_comment_id;
   }
 
-  try {
-    $o_response = $o_vk_api_client->wall()->getComments($s_vk_api_token, $a_getcomments);
-    sms_debug('done');
+  do {
+    try {
+      $o_response = $o_vk_api_client->wall()->getComments($s_vk_api_token, $a_getcomments);
+      sms_debug('done');
 
-    return $o_response;
-  } catch (Exception $e) {
-    return null;
-  }
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+      }
+    }
+  } while (true);
 }
 
 function sms_watched_owners_wall_get() {
@@ -1452,6 +1490,7 @@ $a_default_settlement_enforced = file('private/default_settlement_enforced.txt',
 $a_owner_id_enforced = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
+$a_vk_api_exceptions = sms_data_prepare_exceptions();
 $a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
 $b_need_to_print_first_line = false;
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
