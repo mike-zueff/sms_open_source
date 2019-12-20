@@ -1090,6 +1090,8 @@ function sms_db_vacuum() {
   global $o_sqlite;
 
   $o_sqlite->exec('VACUUM');
+  $o_db_data_rows = $o_sqlite->query('SELECT * FROM users');
+  sms_echo('Settlements count: ' . sms_db_get_rows_count($o_db_data_rows) . '.');
 }
 
 function sms_debug($s_message) {
