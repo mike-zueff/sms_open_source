@@ -1482,6 +1482,10 @@ function sms_watched_owners_wall_get() {
       } else {
         sms_debug('error, wall.get, ' . $i_offset . ', https://vk.com/wall' . $s_wo . '?own=1');
 
+        if ($s_wo < 0) {
+          sms_debug('please remove this value from watched_owners.txt and owner_id_enforced.txt');
+        }
+
         break;
       }
 
