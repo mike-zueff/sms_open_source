@@ -53,6 +53,23 @@ function sms_data_prepare_exceptions() {
   return $a_result;
 }
 
+function sms_data_print_attachment($o_attachment) {
+  $s_result = '  ' . S_TERMINAL_GREEN;
+
+  switch ($o_attachment['type']) {
+  case 'audio':
+    $s_result .= $o_attachment['type'];
+
+    break;
+  default:
+    $s_result .= $o_attachment['type'];
+
+    break;
+  }
+
+  return $s_result . S_TERMINAL_RESET . PHP_EOL;
+}
+
 function sms_db_analyze_data_wall_get() {
   global $a_default_settlement_enforced;
   global $a_from_id_enforced;
@@ -92,6 +109,7 @@ function sms_db_analyze_data_wall_get() {
             if ($s_text_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_text_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -99,6 +117,7 @@ function sms_db_analyze_data_wall_get() {
             if ($s_att_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_att_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -183,7 +202,7 @@ function sms_db_analyze_data_wall_get() {
           $sms_log_buffer .= '  TYPES OF ATTACHMENTS:' . PHP_EOL;
 
           foreach ($o_att_unserialized as $a_aui) {
-            $sms_log_buffer .= '  ' . S_TERMINAL_GREEN . $a_aui['type'] . S_TERMINAL_RESET . PHP_EOL;
+            $sms_log_buffer .= sms_data_print_attachment($a_aui);
           }
         }
 
@@ -248,6 +267,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
             if ($s_text_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_text_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -255,6 +275,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
             if ($s_att_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_att_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -356,7 +377,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
           $sms_log_buffer .= '  TYPES OF ATTACHMENTS:' . PHP_EOL;
 
           foreach ($o_att_unserialized as $a_aui) {
-            $sms_log_buffer .= '  ' . S_TERMINAL_GREEN . $a_aui['type'] . S_TERMINAL_RESET . PHP_EOL;
+            $sms_log_buffer .= sms_data_print_attachment($a_aui);
           }
         }
 
@@ -421,6 +442,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
             if ($s_text_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_text_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -428,6 +450,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
             if ($s_att_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_att_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -529,7 +552,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
           $sms_log_buffer .= '  TYPES OF ATTACHMENTS:' . PHP_EOL;
 
           foreach ($o_att_unserialized as $a_aui) {
-            $sms_log_buffer .= '  ' . S_TERMINAL_GREEN . $a_aui['type'] . S_TERMINAL_RESET . PHP_EOL;
+            $sms_log_buffer .= sms_data_print_attachment($a_aui);
           }
         }
 
@@ -594,6 +617,7 @@ function sms_db_analyze_data_wall_getcomments() {
             if ($s_text_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_text_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -601,6 +625,7 @@ function sms_db_analyze_data_wall_getcomments() {
             if ($s_att_decoded != '') {
               if (preg_match('/' . $a_matches[1] . '/iu', $s_att_decoded)) {
                 $b_need_for_continue = true;
+
                 break;
               }
             }
@@ -709,7 +734,7 @@ function sms_db_analyze_data_wall_getcomments() {
           $sms_log_buffer .= '  TYPES OF ATTACHMENTS:' . PHP_EOL;
 
           foreach ($o_att_unserialized as $a_aui) {
-            $sms_log_buffer .= '  ' . S_TERMINAL_GREEN . $a_aui['type'] . S_TERMINAL_RESET . PHP_EOL;
+            $sms_log_buffer .= sms_data_print_attachment($a_aui);
           }
         }
 

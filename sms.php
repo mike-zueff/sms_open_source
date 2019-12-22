@@ -30,6 +30,7 @@ case 'c':
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
   sms_db_perform_backup();
+
   break;
 case 'f':
   sms_db_vacuum();
@@ -41,14 +42,17 @@ case 'f':
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
   sms_db_perform_backup();
+
   break;
 case 'r':
   sms_db_vacuum();
+
   break;
 default:
   sms_db_analyze_data_wall_get();
   sms_db_analyze_data_wall_getcomments();
   sms_db_analyze_data_wall_get_photos_comments();
   sms_db_analyze_data_wall_get_videos_comments();
+
   break;
 }
