@@ -23,6 +23,27 @@ const S_TERMINAL_RED = "\e[91m";
 const S_TERMINAL_RESET = "\e[0m";
 const S_TERMINAL_YELLOW = "\e[93m";
 
+function sms_data_check_stickers($s_attachments) {
+  $b_at_least_one_not_sticker = false;
+  $b_at_least_one_sticker = false;
+
+  if ($s_attachments == '') {
+    return true;
+  } else {
+    $o_attachments = unserialize($s_attachments);
+  }
+
+  foreach ($o_attachments as $o_a) {
+    if ($o_a['type'] == 'sticker') {
+      $b_at_least_one_sticker = true;
+    } else {
+      $b_at_least_one_not_sticker = true;
+    }
+  }
+
+  return !$b_at_least_one_sticker || $b_at_least_one_not_sticker;
+}
+
 function sms_data_parse_from_id_enforced() {
   global $a_default_settlement_enforced;
   global $a_watched_owners;
@@ -167,7 +188,7 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
 
-        if (in_array($a_pi['from_id'], $a_from_id_enforced) && $s_text_decoded != '') {
+        if (in_array($a_pi['from_id'], $a_from_id_enforced) && $s_text_decoded != '' && sms_data_check_stickers($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -254,7 +275,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
           $o_att_unserialized = unserialize($s_att_decoded);
         }
 
-        if (in_array($a_ci['from_id'], $a_from_id_enforced)) {
+        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
           $b_from_id_enforced = true;
         }
 
@@ -429,7 +450,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
           $o_att_unserialized = unserialize($s_att_decoded);
         }
 
-        if (in_array($a_ci['from_id'], $a_from_id_enforced)) {
+        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
           $b_from_id_enforced = true;
         }
 
@@ -604,7 +625,7 @@ function sms_db_analyze_data_wall_getcomments() {
           $o_att_unserialized = unserialize($s_att_decoded);
         }
 
-        if (in_array($a_ci['from_id'], $a_from_id_enforced)) {
+        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
           $b_from_id_enforced = true;
         }
 
