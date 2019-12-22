@@ -49,9 +49,13 @@ echo "USER_1" > private/default_settlement_enforced.txt
 echo "USER_2" >> private/default_settlement_enforced.txt
 echo "USER_3" >> private/default_settlement_enforced.txt
 
-echo "/PATTERN_1/iu" > private/patterns.txt
-echo "/PATTERN_2/iu" >> private/patterns.txt
-echo "/PATTERN_3/iu" >> private/patterns.txt
+echo "/PATTERN_1/iu" > private/patterns_common.txt
+echo "/PATTERN_2/iu" >> private/patterns_common.txt
+echo "/PATTERN_3/iu" >> private/patterns_common.txt
+
+echo "/PATTERN_1/iu" > private/patterns_enforced.txt
+echo "/PATTERN_2/iu" >> private/patterns_enforced.txt
+echo "/PATTERN_3/iu" >> private/patterns_enforced.txt
 ```
 
 ### Data masking example
@@ -103,11 +107,11 @@ echo "${D}video_comment|VIDEO_OWNER_ID_3|VIDEO_ID_3|VIDEO_COMMENT_ID_3" >> priva
 ```
 ./sms.php -f
 clear; ./sms.php
-vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
+vim -O private/{watched_owners,patterns_common,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
+vim -O private/{watched_owners,patterns_common,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{owner_id_enforced,watched_owners,patterns,ignored_items,complaints}.txt
+vim -O private/{watched_owners,patterns_common,ignored_items,complaints}.txt
 clear; ./sms.php
 ```
 
