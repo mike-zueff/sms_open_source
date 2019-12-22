@@ -44,6 +44,22 @@ function sms_data_check_stickers($s_attachments) {
   return !$b_at_least_one_sticker || $b_at_least_one_not_sticker;
 }
 
+function sms_data_enforced_post_submit($i_owner_id, $i_post_id) {
+  global $a_posts_enforced;
+
+  $a_item = [
+    'owner_id' => $i_owner_id,
+    'post_id' => $i_post_id,
+  ];
+
+  if (!in_array($a_item, $a_posts_enforced)) {
+    array_push($a_posts_enforced, [
+      'owner_id' => $i_owner_id,
+      'post_id' => $i_post_id,
+    ]);
+  }
+}
+
 function sms_data_parse_from_id_enforced() {
   global $a_default_settlement_enforced;
   global $a_watched_owners;
@@ -105,6 +121,7 @@ function sms_db_analyze_data_wall_get() {
   global $a_ignored_items;
   global $a_owner_id_enforced;
   global $a_patterns;
+  global $a_patterns_enforced;
   global $b_need_to_print_first_line;
   global $o_sqlite;
   global $s_date_label;
@@ -124,6 +141,7 @@ function sms_db_analyze_data_wall_get() {
         }
 
         $b_need_for_continue = false;
+        $b_post_enforced = false;
         $s_att_decoded = base64_decode($a_pi['attachments']);
         $s_text_decoded = base64_decode($a_pi['text']);
 
@@ -193,31 +211,58 @@ function sms_db_analyze_data_wall_get() {
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
+        if ($s_text_decoded != '') {
+          foreach ($a_patterns_enforced as $s_pei) {
+            $a_matches_enforced = [];
+
+            if (preg_match($s_pei, $s_text_decoded, $a_matches_enforced)) {
+              $b_post_enforced = true;
+              sms_data_enforced_post_submit($a_pi['owner_id'], $a_pi['post_id']);
+            }
+          }
+        }
+
+        if ($s_att_decoded != '') {
+          foreach ($a_patterns_enforced as $s_pei) {
+            $a_matches_enforced = [];
+
+            if (preg_match($s_pei, $s_att_decoded, $a_matches_enforced)) {
+              $b_post_enforced = true;
+              sms_data_enforced_post_submit($a_pi['owner_id'], $a_pi['post_id']);
+            }
+          }
+        }
+
+        if ($b_post_enforced) {
+          $b_need_for_log = true;
+          $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
+        }
+
         if (in_array($a_pi['owner_id'], $a_owner_id_enforced)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
         if ($s_text_decoded != '') {
-          foreach ($a_patterns as $a_pattern) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pattern, $s_text_decoded, $a_matches);
+            preg_match_all($s_pi, $s_text_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
 
         if ($s_att_decoded != '') {
-          foreach ($a_patterns as $a_pattern) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pattern, $s_att_decoded, $a_matches);
+            preg_match_all($s_pi, $s_att_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
@@ -374,25 +419,25 @@ function sms_db_analyze_data_wall_get_photos_comments() {
         }
 
         if ($s_text_decoded != '') {
-          foreach ($a_patterns as $a_pi) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pi, $s_text_decoded, $a_matches);
+            preg_match_all($s_pi, $s_text_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
 
         if ($s_att_decoded != '') {
-          foreach ($a_patterns as $a_pi) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pi, $s_att_decoded, $a_matches);
+            preg_match_all($s_pi, $s_att_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
@@ -549,25 +594,25 @@ function sms_db_analyze_data_wall_get_videos_comments() {
         }
 
         if ($s_text_decoded != '') {
-          foreach ($a_patterns as $a_pi) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pi, $s_text_decoded, $a_matches);
+            preg_match_all($s_pi, $s_text_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
 
         if ($s_att_decoded != '') {
-          foreach ($a_patterns as $a_pi) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pi, $s_att_decoded, $a_matches);
+            preg_match_all($s_pi, $s_att_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
@@ -731,25 +776,25 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if ($s_text_decoded != '') {
-          foreach ($a_patterns as $a_pi) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pi, $s_text_decoded, $a_matches);
+            preg_match_all($s_pi, $s_text_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN TEXT: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
 
         if ($s_att_decoded != '') {
-          foreach ($a_patterns as $a_pi) {
+          foreach ($a_patterns as $s_pi) {
             $a_matches = [];
-            preg_match_all($a_pi, $s_att_decoded, $a_matches);
+            preg_match_all($s_pi, $s_att_decoded, $a_matches);
 
-            foreach ($a_matches[0] as $a_mi) {
+            foreach ($a_matches[0] as $s_mi) {
               $b_need_for_log = true;
-              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($a_mi) . S_TERMINAL_RESET . PHP_EOL;
+              $sms_log_buffer .= '  IN ATTACHMENTS: ' . S_TERMINAL_GREEN . sms_php_mb_trim($s_mi) . S_TERMINAL_RESET . PHP_EOL;
             }
           }
         }
@@ -1554,7 +1599,9 @@ function sms_watched_owners_wall_get() {
 
 $a_default_settlement_enforced = file('private/default_settlement_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_owner_id_enforced = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
-$a_patterns = file('private/patterns.txt', FILE_IGNORE_NEW_LINES);
+$a_patterns = file('private/patterns_common.txt', FILE_IGNORE_NEW_LINES);
+$a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LINES);
+$a_posts_enforced = [];
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $a_vk_api_exceptions = sms_data_prepare_exceptions();
 $a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
