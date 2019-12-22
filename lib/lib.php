@@ -47,7 +47,7 @@ function sms_data_check_stickers($s_attachments) {
 function sms_data_enforced_post_check($i_owner_id, $i_post_id) {
   global $a_posts_enforced;
 
-    $s_item = $i_owner_id . '_' . $i_post_id;
+  $s_item = $i_owner_id . '_' . $i_post_id;
 
   if (in_array($s_item, $a_posts_enforced)) {
     return true;
