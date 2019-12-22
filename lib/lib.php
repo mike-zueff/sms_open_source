@@ -58,7 +58,11 @@ function sms_data_print_attachment($o_attachment) {
 
   switch ($o_attachment['type']) {
   case 'audio':
-    $s_result .= $o_attachment['type'];
+    $s_result .= 'audio, ' . $o_attachment['audio']['artist'] . ', ' . $o_attachment['audio']['title'];
+
+    break;
+  case 'photo':
+    $s_result .= 'photo, ' . end($o_attachment['photo']['sizes'])['url'];
 
     break;
   default:
