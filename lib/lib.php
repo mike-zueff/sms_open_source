@@ -194,7 +194,7 @@ function sms_db_analyze_data_wall_get() {
       }
     }
 
-    if ($s_att_decoded != '') {
+    if ($b_grep_attachments && $s_att_decoded != '') {
       foreach ($a_patterns_enforced as $s_pei) {
         if (preg_match($s_pei, $s_att_decoded)) {
           sms_data_enforced_post_submit($a_pi['owner_id'], $a_pi['post_id']);
