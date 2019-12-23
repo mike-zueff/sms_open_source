@@ -107,11 +107,11 @@ echo "${D}video_comment|VIDEO_OWNER_ID_3|VIDEO_ID_3|VIDEO_COMMENT_ID_3" >> priva
 ```
 ./sms.php -f
 clear; ./sms.php
-vim -O private/{watched_owners,patterns_common,ignored_items,complaints}.txt
+vim -O private/{owner_id_common,patterns_common,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{watched_owners,patterns_common,ignored_items,complaints}.txt
+vim -O private/{owner_id_common,patterns_common,ignored_items,complaints}.txt
 clear; ./sms.php
-vim -O private/{watched_owners,patterns_common,ignored_items,complaints}.txt
+vim -O private/{owner_id_common,patterns_common,ignored_items,complaints}.txt
 clear; ./sms.php
 ```
 
