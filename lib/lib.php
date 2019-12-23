@@ -159,7 +159,7 @@ function sms_db_analyze_data_wall_get() {
       }
     }
 
-    if (sms_settlement_check($a_pi['settlement_id']) || in_array($a_pi['from_id'], $a_default_settlement_enforced)) {
+    if (sms_settlement_check($a_pi['settlement_id'], $a_pi['from_id'])) {
       if ($a_pi['from_id'] > 0) {
         if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
           continue;
@@ -335,7 +335,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
   $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
-    if (sms_settlement_check($a_ci['settlement_id']) || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
+    if (sms_settlement_check($a_ci['settlement_id'], $a_ci['from_id'])) {
       if ($a_ci['from_id'] > 0) {
         $b_from_id_enforced = false;
         $s_att_decoded = base64_decode($a_ci['attachments']);
@@ -515,7 +515,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
   $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
-    if (sms_settlement_check($a_ci['settlement_id']) || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
+    if (sms_settlement_check($a_ci['settlement_id'], $a_ci['from_id'])) {
       if ($a_ci['from_id'] > 0) {
         $b_from_id_enforced = false;
         $s_att_decoded = base64_decode($a_ci['attachments']);
@@ -695,7 +695,7 @@ function sms_db_analyze_data_wall_getcomments() {
   $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
-    if (sms_settlement_check($a_ci['settlement_id']) || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
+    if (sms_settlement_check($a_ci['settlement_id'], $a_ci['from_id'])) {
       if ($a_ci['from_id'] > 0) {
         $b_from_id_enforced = false;
         $s_att_decoded = base64_decode($a_ci['attachments']);
@@ -1007,7 +1007,7 @@ function sms_db_posts_fetch_comments() {
               $a_db_user_data_riti = sms_user_fetch_data($i_db_from_id_riti);
               $i_db_settlement_id_riti = $a_db_user_data_riti['settlement_id'];
 
-              if (sms_settlement_check($i_db_settlement_id_riti)) {
+              if (sms_settlement_check($i_db_settlement_id_riti, $i_db_from_id_riti)) {
                 $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_riti', $i_db_settlement_id_riti, $i_db_comment_id_riti, $i_db_date_riti, $i_db_from_id_riti, $i_db_owner_id_riti, $i_db_parent_comment_id_riti, $i_db_post_id_riti, '$s_db_text_riti')");
               }
             }
@@ -1042,7 +1042,7 @@ function sms_db_posts_fetch_comments() {
                     $a_db_user_data_nested = sms_user_fetch_data($i_db_from_id_nested);
                     $i_db_settlement_id_nested = $a_db_user_data_nested['settlement_id'];
 
-                    if (sms_settlement_check($i_db_settlement_id_nested)) {
+                    if (sms_settlement_check($i_db_settlement_id_nested, $i_db_from_id_nested)) {
                       $o_sqlite->exec("REPLACE INTO wall_getcomments(attachments, settlement_id, comment_id, date, from_id, owner_id, parent_comment_id, post_id, text) VALUES('$s_db_attachments_nested', $i_db_settlement_id_nested, $i_db_comment_id_nested, $i_db_date_nested, $i_db_from_id_nested, $i_db_owner_id_nested, $i_db_parent_comment_id_nested, $i_db_post_id_nested, '$s_db_text_nested')");
                     }
                   }
@@ -1114,7 +1114,7 @@ function sms_db_posts_fetch_comments() {
                         $a_att_user_data = sms_user_fetch_data($i_att_from_id);
                         $i_att_settlement_id = $a_att_user_data['settlement_id'];
 
-                        if (sms_settlement_check($i_att_settlement_id)) {
+                        if (sms_settlement_check($i_att_settlement_id, $i_att_from_id)) {
                           $o_sqlite->exec("REPLACE INTO wall_get_photos_comments(access_key, attachments, comment_id, date, from_id, owner_id, photo_id, photo_owner_id, post_id, settlement_id, text) VALUES('$s_att_access_key', '$s_att_attachments', $i_att_comment_id, $i_att_date, $i_att_from_id, $i_att_owner_id, $i_att_photo_id, $i_att_photo_owner_id, $i_att_post_id, $i_att_settlement_id, '$s_att_text')");
                         }
                       }
@@ -1183,7 +1183,7 @@ function sms_db_posts_fetch_comments() {
                         $a_att_user_data = sms_user_fetch_data($i_att_from_id);
                         $i_att_settlement_id = $a_att_user_data['settlement_id'];
 
-                        if (sms_settlement_check($i_att_settlement_id)) {
+                        if (sms_settlement_check($i_att_settlement_id, $i_att_from_id)) {
                           $o_sqlite->exec("REPLACE INTO wall_get_videos_comments(access_key, attachments, comment_id, date, from_id, owner_id, video_id, video_owner_id, post_id, settlement_id, text) VALUES('$s_att_access_key', '$s_att_attachments', $i_att_comment_id, $i_att_date, $i_att_from_id, $i_att_owner_id, $i_att_video_id, $i_att_video_owner_id, $i_att_post_id, $i_att_settlement_id, '$s_att_text')");
                         }
                       }
@@ -1287,7 +1287,8 @@ function sms_print_repeat($s_fragment, $i_count) {
   return $s_result;
 }
 
-function sms_settlement_check($i_settlement_id) {
+function sms_settlement_check($i_settlement_id, $i_from_id) {
+  global $a_default_settlement_enforced;
   global $a_settlements;
 
   if($i_settlement_id < 0) {
@@ -1297,6 +1298,14 @@ function sms_settlement_check($i_settlement_id) {
   foreach ($a_settlements['items'] as $a_si) {
     if ($a_si['id'] == $i_settlement_id) {
       return true;
+    }
+  }
+
+  if ($i_from_id != I_NULL_VALUE) {
+    foreach ($a_default_settlement_enforced as $a_dsei) {
+      if ($a_dsei == $i_from_id) {
+        return true;
+      }
     }
   }
 
