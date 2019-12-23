@@ -397,6 +397,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
         }
 
         $b_need_for_continue = false;
+        $b_post_enforced = false;
         $b_settlement_enforced = false;
 
         foreach ($a_ignored_items as $a_ii) {
@@ -583,6 +584,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
         }
 
         $b_need_for_continue = false;
+        $b_post_enforced = false;
         $b_settlement_enforced = false;
 
         foreach ($a_ignored_items as $a_ii) {
@@ -769,6 +771,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         $b_need_for_continue = false;
+        $b_post_enforced = false;
         $b_settlement_enforced = false;
 
         foreach ($a_ignored_items as $a_ii) {
