@@ -93,7 +93,9 @@ function sms_data_parse_owner_id_enforced() {
   $a_result = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 
   foreach ($a_from_id_enforced as $s_fiei) {
-    array_push($a_result, $s_fiei);
+    if (!in_array($s_fiei, $a_result)) {
+      array_push($a_result, $s_fiei);
+    }
   }
 
   return $a_result;
@@ -1301,7 +1303,11 @@ function sms_fs_parse_ignored_items() {
   $a_result = [];
 
   foreach ($a_ignored_items as $s_ii) {
-    array_push($a_result, mb_substr($s_ii, mb_strlen($s_date_label)));
+    $s_line = mb_substr($s_ii, mb_strlen($s_date_label));
+
+    if (!in_array($s_line, $a_result)) {
+      array_push($a_result, $s_line);
+    }
   }
 
   return $a_result;
