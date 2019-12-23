@@ -202,6 +202,7 @@ function sms_db_analyze_data_wall_get() {
 
         $b_need_for_continue = false;
         $b_post_enforced = false;
+        $b_settlement_enforced = false;
 
         if ($s_att_decoded != '') {
           $o_att_unserialized = unserialize($s_att_decoded);
@@ -241,6 +242,10 @@ function sms_db_analyze_data_wall_get() {
 
         if (!in_array($a_pi['from_id'], $a_default_settlement_enforced)) {
           $a_settlement_data = sms_settlement_fetch_data($a_pi['settlement_id']);
+
+          if ($a_settlement_data['settlement'] == S_DEFAULT_SETTLEMENT_TITLE) {
+            $b_settlement_enforced = true;
+          }
         }
 
         $b_need_for_log = false;
@@ -248,7 +253,7 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= 'Post #' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_pi['from_id'] . PHP_EOL;
 
-        if (in_array($a_pi['from_id'], $a_default_settlement_enforced)) {
+        if ($b_settlement_enforced || in_array($a_pi['from_id'], $a_default_settlement_enforced)) {
           $sms_log_buffer .= S_TERMINAL_YELLOW . S_DEFAULT_SETTLEMENT_TITLE . S_TERMINAL_RESET . PHP_EOL;
         } else {
           if ($a_settlement_data['district'] != '' ) {
@@ -389,6 +394,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
         }
 
         $b_need_for_continue = false;
+        $b_settlement_enforced = false;
 
         foreach ($a_ignored_items as $a_ii) {
           $a_matches = [];
@@ -434,6 +440,10 @@ function sms_db_analyze_data_wall_get_photos_comments() {
 
         if (!in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
           $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
+
+          if ($a_settlement_data['settlement'] == S_DEFAULT_SETTLEMENT_TITLE) {
+            $b_settlement_enforced = true;
+          }
         }
 
         $b_need_for_log = false;
@@ -441,7 +451,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
         $sms_log_buffer .= 'Photo comment #' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
-        if (in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
+        if ($b_settlement_enforced || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
           $sms_log_buffer .= S_TERMINAL_YELLOW . S_DEFAULT_SETTLEMENT_TITLE . S_TERMINAL_RESET . PHP_EOL;
         } else {
           if ($a_settlement_data['district'] != '' ) {
@@ -569,6 +579,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
         }
 
         $b_need_for_continue = false;
+        $b_settlement_enforced = false;
 
         foreach ($a_ignored_items as $a_ii) {
           $a_matches = [];
@@ -614,6 +625,10 @@ function sms_db_analyze_data_wall_get_videos_comments() {
 
         if (!in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
           $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
+
+          if ($a_settlement_data['settlement'] == S_DEFAULT_SETTLEMENT_TITLE) {
+            $b_settlement_enforced = true;
+          }
         }
 
         $b_need_for_log = false;
@@ -621,7 +636,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
         $sms_log_buffer .= 'Video comment #' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
-        if (in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
+        if ($b_settlement_enforced || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
           $sms_log_buffer .= S_TERMINAL_YELLOW . S_DEFAULT_SETTLEMENT_TITLE . S_TERMINAL_RESET . PHP_EOL;
         } else {
           if ($a_settlement_data['district'] != '' ) {
@@ -749,6 +764,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         $b_need_for_continue = false;
+        $b_settlement_enforced = false;
 
         foreach ($a_ignored_items as $a_ii) {
           $a_matches = [];
@@ -800,6 +816,10 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if (!in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
           $a_settlement_data = sms_settlement_fetch_data($a_ci['settlement_id']);
+
+          if ($a_settlement_data['settlement'] == S_DEFAULT_SETTLEMENT_TITLE) {
+            $b_settlement_enforced = true;
+          }
         }
 
         $b_need_for_log = false;
@@ -807,7 +827,7 @@ function sms_db_analyze_data_wall_getcomments() {
         $sms_log_buffer .= 'Comment #' . $i_counter . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
-        if (in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
+        if ($b_settlement_enforced || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
           $sms_log_buffer .= S_TERMINAL_YELLOW . S_DEFAULT_SETTLEMENT_TITLE . S_TERMINAL_RESET . PHP_EOL;
         } else {
           if ($a_settlement_data['district'] != '' ) {
@@ -1347,6 +1367,8 @@ function sms_settlement_fetch_data($i_settlement_id) {
   global $a_settlements;
 
   $a_settlement_data = [];
+  $a_settlement_data['district'] = '';
+  $a_settlement_data['settlement'] = S_DEFAULT_SETTLEMENT_TITLE;
 
   foreach ($a_settlements['items'] as $a_si) {
     if ($a_si['id'] == $i_settlement_id) {
@@ -1361,6 +1383,8 @@ function sms_settlement_fetch_data($i_settlement_id) {
       return $a_settlement_data;
     }
   }
+
+  return $a_settlement_data;
 }
 
 function sms_shutdown() {
