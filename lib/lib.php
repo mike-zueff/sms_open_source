@@ -270,6 +270,7 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_pi['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'enforced_post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
 
         if (in_array($a_pi['from_id'], $a_from_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_stickers($s_att_decoded) && $s_att_decoded != '')) {
           $b_need_for_log = true;
@@ -475,6 +476,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_ci['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_ci['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_ci['owner_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'enforced_post|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
@@ -660,6 +662,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_ci['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_ci['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_ci['owner_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'enforced_post|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
@@ -852,6 +855,7 @@ function sms_db_analyze_data_wall_getcomments() {
         $sms_log_buffer .= $s_date_label . 'all_from_with_fragment|' . $a_ci['from_id'] . '|...' . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_ci['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_ci['owner_id'] . PHP_EOL;
+        $sms_log_buffer .= $s_date_label . 'enforced_post|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'] . PHP_EOL;
 
         if ($b_from_id_enforced) {
           $b_need_for_log = true;
@@ -1303,7 +1307,12 @@ function sms_fs_parse_ignored_items() {
   $a_result = [];
 
   foreach ($a_ignored_items as $s_ii) {
+    $a_matches = [];
     $s_line = mb_substr($s_ii, mb_strlen($s_date_label));
+
+    if (preg_match('/^enforced_post\|(.+)\|(.+)$/iu', $s_line, $a_matches)) {
+      sms_data_enforced_post_submit($a_matches[1], $a_matches[2]);
+    }
 
     if (!in_array($s_line, $a_result)) {
       array_push($a_result, $s_line);

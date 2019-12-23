@@ -101,6 +101,10 @@ echo "${D}photo_comment|PHOTO_OWNER_ID_3|PHOTO_ID_3|PHOTO_COMMENT_ID_3" >> priva
 echo "${D}video_comment|VIDEO_OWNER_ID_1|VIDEO_ID_1|VIDEO_COMMENT_ID_1" >> private/ignored_items.txt
 echo "${D}video_comment|VIDEO_OWNER_ID_2|VIDEO_ID_2|VIDEO_COMMENT_ID_2" >> private/ignored_items.txt
 echo "${D}video_comment|VIDEO_OWNER_ID_3|VIDEO_ID_3|VIDEO_COMMENT_ID_3" >> private/ignored_items.txt
+
+echo "${D}enforced_post|OWNER_ID_1|POST_ID_1" >> private/ignored_items.txt
+echo "${D}enforced_post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
+echo "${D}enforced_post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 ```
 
 ### Weekly steps
