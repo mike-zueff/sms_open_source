@@ -145,6 +145,10 @@ function sms_data_print_attachment($o_attachment) {
     $s_result .= 'photo, ' . end($o_attachment['photo']['sizes'])['url'];
 
     break;
+  case 'video':
+    $s_result .= 'video, ' . $o_attachment['video']['title'];
+
+    break;
   default:
     $s_result .= $o_attachment['type'];
 
