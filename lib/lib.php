@@ -172,6 +172,7 @@ function sms_db_analyze_data_wall_get() {
   global $a_owner_id_enforced;
   global $a_patterns;
   global $a_patterns_enforced;
+  global $b_grep_attachments;
   global $b_need_to_print_first_line;
   global $o_sqlite;
   global $s_date_label;
@@ -308,7 +309,7 @@ function sms_db_analyze_data_wall_get() {
           }
         }
 
-        if ($b_post_enforced) {
+        if ($b_post_enforced && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -377,6 +378,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
   global $a_ignored_items;
   global $a_owner_id_enforced;
   global $a_patterns;
+  global $b_grep_attachments;
   global $b_need_to_print_first_line;
   global $o_sqlite;
   global $s_date_label;
@@ -564,6 +566,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
   global $a_ignored_items;
   global $a_owner_id_enforced;
   global $a_patterns;
+  global $b_grep_attachments;
   global $b_need_to_print_first_line;
   global $o_sqlite;
   global $s_date_label;
@@ -751,6 +754,7 @@ function sms_db_analyze_data_wall_getcomments() {
   global $a_ignored_items;
   global $a_owner_id_enforced;
   global $a_patterns;
+  global $b_grep_attachments;
   global $b_need_to_print_first_line;
   global $o_sqlite;
   global $s_date_label;
