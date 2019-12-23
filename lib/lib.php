@@ -23,9 +23,9 @@ const S_TERMINAL_RED = "\e[91m";
 const S_TERMINAL_RESET = "\e[0m";
 const S_TERMINAL_YELLOW = "\e[93m";
 
-function sms_data_check_stickers($s_attachments) {
-  $b_at_least_one_not_sticker = false;
-  $b_at_least_one_sticker = false;
+function sms_data_check_a_t($s_attachments) {
+  $b_at_least_one_inane = false;
+  $b_at_least_one_pithy = false;
 
   if ($s_attachments == '') {
     return true;
@@ -34,14 +34,21 @@ function sms_data_check_stickers($s_attachments) {
   }
 
   foreach ($o_attachments as $o_a) {
-    if ($o_a['type'] == 'sticker') {
-      $b_at_least_one_sticker = true;
-    } else {
-      $b_at_least_one_not_sticker = true;
+    switch ($o_a['type']) {
+    case 'link':
+    case 'photo':
+    case 'sticker':
+      $b_at_least_one_inane = true;
+
+      break;
+    default:
+      $b_at_least_one_pithy = true;
+
+      break;
     }
   }
 
-  return !$b_at_least_one_sticker || $b_at_least_one_not_sticker;
+  return !$b_at_least_one_inane || $b_at_least_one_pithy;
 }
 
 function sms_data_enforced_post_check($i_owner_id, $i_post_id) {
@@ -276,7 +283,7 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'enforced_post|' . $a_pi['owner_id'] . '|' . $a_pi['post_id'] . PHP_EOL;
 
-        if (in_array($a_pi['from_id'], $a_from_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_stickers($s_att_decoded) && $s_att_decoded != '')) {
+        if (in_array($a_pi['from_id'], $a_from_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_a_t($s_att_decoded) && $s_att_decoded != '')) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -306,7 +313,7 @@ function sms_db_analyze_data_wall_get() {
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (in_array($a_pi['owner_id'], $a_owner_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_stickers($s_att_decoded) && $s_att_decoded != '')) {
+        if (in_array($a_pi['owner_id'], $a_owner_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_a_t($s_att_decoded) && $s_att_decoded != '')) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -388,7 +395,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
           $o_att_unserialized = unserialize($s_att_decoded);
         }
 
-        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_a_t($s_att_decoded)) {
           $b_from_id_enforced = true;
         }
 
@@ -488,12 +495,12 @@ function sms_db_analyze_data_wall_get_photos_comments() {
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (sms_data_enforced_post_check($a_ci['owner_id'], $a_ci['post_id']) && sms_data_check_stickers($s_att_decoded)) {
+        if (sms_data_enforced_post_check($a_ci['owner_id'], $a_ci['post_id']) && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (in_array($a_ci['owner_id'], $a_owner_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_ci['owner_id'], $a_owner_id_enforced) && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -575,7 +582,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
           $o_att_unserialized = unserialize($s_att_decoded);
         }
 
-        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_a_t($s_att_decoded)) {
           $b_from_id_enforced = true;
         }
 
@@ -675,12 +682,12 @@ function sms_db_analyze_data_wall_get_videos_comments() {
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (sms_data_enforced_post_check($a_ci['owner_id'], $a_ci['post_id']) && sms_data_check_stickers($s_att_decoded)) {
+        if (sms_data_enforced_post_check($a_ci['owner_id'], $a_ci['post_id']) && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (in_array($a_ci['owner_id'], $a_owner_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_ci['owner_id'], $a_owner_id_enforced) && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -762,7 +769,7 @@ function sms_db_analyze_data_wall_getcomments() {
           $o_att_unserialized = unserialize($s_att_decoded);
         }
 
-        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_ci['from_id'], $a_from_id_enforced) && sms_data_check_a_t($s_att_decoded)) {
           $b_from_id_enforced = true;
         }
 
@@ -869,12 +876,12 @@ function sms_db_analyze_data_wall_getcomments() {
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (sms_data_enforced_post_check($a_ci['owner_id'], $a_ci['post_id']) && sms_data_check_stickers($s_att_decoded)) {
+        if (sms_data_enforced_post_check($a_ci['owner_id'], $a_ci['post_id']) && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (in_array($a_ci['owner_id'], $a_owner_id_enforced) && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_ci['owner_id'], $a_owner_id_enforced) && sms_data_check_a_t($s_att_decoded)) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
