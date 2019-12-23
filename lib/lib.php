@@ -79,7 +79,9 @@ function sms_data_parse_from_id_enforced() {
   }
 
   foreach ($a_default_settlement_enforced as $s_dsei) {
-    array_push($a_result, $s_dsei);
+    if (!in_array($s_dsei, $a_result)) {
+      array_push($a_result, $s_dsei);
+    }
   }
 
   return $a_result;
@@ -108,7 +110,9 @@ function sms_data_parse_watched_owners() {
   }
 
   foreach ($a_default_settlement_enforced as $s_dsei) {
-    array_push($a_result, $s_dsei);
+    if (!in_array($s_dsei, $a_result)) {
+      array_push($a_result, $s_dsei);
+    }
   }
 
   return $a_result;
