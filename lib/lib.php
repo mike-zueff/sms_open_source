@@ -386,7 +386,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced) {
+          if (!$b_from_id_enforced && !$b_post_enforced) {
             continue;
           }
         }
@@ -566,7 +566,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced) {
+          if (!$b_from_id_enforced && !$b_post_enforced) {
             continue;
           }
         }
@@ -746,7 +746,7 @@ function sms_db_analyze_data_wall_getcomments() {
         }
 
         if (in_array('all_comments_under|' . $a_ci['owner_id'] . '|' . $a_ci['post_id'], $a_ignored_items)) {
-          if (!$b_from_id_enforced) {
+          if (!$b_from_id_enforced && !$b_post_enforced) {
             continue;
           }
         }
