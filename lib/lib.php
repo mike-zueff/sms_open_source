@@ -69,6 +69,7 @@ function sms_data_enforced_post_submit($i_owner_id, $i_post_id) {
 function sms_data_parse_from_id_enforced() {
   global $a_default_settlement_enforced;
   global $a_watched_owners;
+  //TODO
 
   $a_result = [];
 
@@ -82,6 +83,23 @@ function sms_data_parse_from_id_enforced() {
     if (!in_array($s_dsi, $a_watched_owners)) {
       array_push($a_result, $s_dsi);
     }
+  }
+
+  return $a_result;
+}
+
+function sms_data_parse_watched_owners() {
+  global $a_default_settlement_enforced;
+  global $a_owner_id_common;
+
+  $a_result = [];
+
+  foreach ($a_owner_id_common as $s_oici) {
+    array_push($a_result, $s_oici);
+  }
+
+  foreach ($a_default_settlement_enforced as $s_dsei) {
+    array_push($a_result, $s_dsei);
   }
 
   return $a_result;
@@ -1647,13 +1665,13 @@ function sms_watched_owners_wall_get() {
 }
 
 $a_default_settlement_enforced = file('private/default_settlement_enforced.txt', FILE_IGNORE_NEW_LINES);
+$a_owner_id_common = file('private/owner_id_common.txt', FILE_IGNORE_NEW_LINES);
 $a_owner_id_enforced = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns_common.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_posts_enforced = [];
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $a_vk_api_exceptions = sms_data_prepare_exceptions();
-$a_watched_owners = file('private/owner_id_common.txt', FILE_IGNORE_NEW_LINES);
 $b_need_to_print_first_line = false;
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
 $o_vk_api_client = new VK\Client\VKApiClient();
@@ -1663,6 +1681,7 @@ $s_vk_api_token = trim(file_get_contents('private/vk_api_token.txt'));
 date_default_timezone_set('Europe/Moscow');
 $i_timestamp = time();
 $s_date_label = date('y_W|');
+$a_watched_owners = sms_data_parse_watched_owners();
 $a_from_id_enforced = sms_data_parse_from_id_enforced();
 $a_ignored_items = sms_fs_parse_ignored_items();
 register_shutdown_function('sms_shutdown');
