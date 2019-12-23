@@ -1622,7 +1622,7 @@ function sms_watched_owners_wall_get() {
         sms_debug('error, wall.get, ' . $i_offset . ', https://vk.com/wall' . $s_wo . '?own=1');
 
         if ($s_wo < 0) {
-          sms_debug('please remove this value from watched_owners.txt and owner_id_enforced.txt');
+          sms_debug('please remove this value from owner_id_common.txt and owner_id_enforced.txt');
         }
 
         break;
@@ -1644,7 +1644,7 @@ $a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LIN
 $a_posts_enforced = [];
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $a_vk_api_exceptions = sms_data_prepare_exceptions();
-$a_watched_owners = file('private/watched_owners.txt', FILE_IGNORE_NEW_LINES);
+$a_watched_owners = file('private/owner_id_common.txt', FILE_IGNORE_NEW_LINES);
 $b_need_to_print_first_line = false;
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
 $o_vk_api_client = new VK\Client\VKApiClient();

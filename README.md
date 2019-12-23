@@ -29,13 +29,13 @@ mkdir private
 echo "TOKEN" > private/vk_api_token.txt
 touch private/complaints.txt
 
-echo "-GROUP_1" > private/watched_owners.txt
-echo "-GROUP_2" >> private/watched_owners.txt
-echo "-GROUP_3" >> private/watched_owners.txt
+echo "-GROUP_1" > private/owner_id_common.txt
+echo "-GROUP_2" >> private/owner_id_common.txt
+echo "-GROUP_3" >> private/owner_id_common.txt
 
-echo "USER_1" >> private/watched_owners.txt
-echo "USER_2" >> private/watched_owners.txt
-echo "USER_3" >> private/watched_owners.txt
+echo "USER_1" >> private/owner_id_common.txt
+echo "USER_2" >> private/owner_id_common.txt
+echo "USER_3" >> private/owner_id_common.txt
 
 echo "-GROUP_1" > private/owner_id_enforced.txt
 echo "-GROUP_2" >> private/owner_id_enforced.txt
