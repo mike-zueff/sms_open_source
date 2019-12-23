@@ -269,7 +269,7 @@ function sms_db_analyze_data_wall_get() {
         $sms_log_buffer .= $s_date_label . 'from_id|' . $a_pi['from_id'] . PHP_EOL;
         $sms_log_buffer .= $s_date_label . 'owner_id|' . $a_pi['owner_id'] . PHP_EOL;
 
-        if (in_array($a_pi['from_id'], $a_from_id_enforced) && $s_text_decoded != '' && sms_data_check_stickers($s_att_decoded)) {
+        if (in_array($a_pi['from_id'], $a_from_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_stickers($s_att_decoded) && $s_att_decoded != '')) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_YELLOW . 'ENFORCED (FROM_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
@@ -299,7 +299,7 @@ function sms_db_analyze_data_wall_get() {
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (POST)' . S_TERMINAL_RESET . PHP_EOL;
         }
 
-        if (in_array($a_pi['owner_id'], $a_owner_id_enforced)) {
+        if (in_array($a_pi['owner_id'], $a_owner_id_enforced) && ($s_text_decoded != '' || $s_text_decoded == '' && sms_data_check_stickers($s_att_decoded) && $s_att_decoded != '')) {
           $b_need_for_log = true;
           $sms_log_buffer .= '  ' . S_TERMINAL_CYAN . 'ENFORCED (OWNER_ID)' . S_TERMINAL_RESET . PHP_EOL;
         }
