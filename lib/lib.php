@@ -330,7 +330,7 @@ function sms_db_analyze_data_wall_get() {
           }
         }
 
-        if ($s_att_decoded != '') {
+        if ($b_grep_attachments && $s_att_decoded != '') {
           foreach ($a_patterns as $s_pi) {
             $a_matches = [];
             preg_match_all($s_pi, $s_att_decoded, $a_matches);
@@ -517,7 +517,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
           }
         }
 
-        if ($s_att_decoded != '') {
+        if ($b_grep_attachments && $s_att_decoded != '') {
           foreach ($a_patterns as $s_pi) {
             $a_matches = [];
             preg_match_all($s_pi, $s_att_decoded, $a_matches);
@@ -704,7 +704,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
           }
         }
 
-        if ($s_att_decoded != '') {
+        if ($b_grep_attachments && $s_att_decoded != '') {
           foreach ($a_patterns as $s_pi) {
             $a_matches = [];
             preg_match_all($s_pi, $s_att_decoded, $a_matches);
@@ -898,7 +898,7 @@ function sms_db_analyze_data_wall_getcomments() {
           }
         }
 
-        if ($s_att_decoded != '') {
+        if ($b_grep_attachments && $s_att_decoded != '') {
           foreach ($a_patterns as $s_pi) {
             $a_matches = [];
             preg_match_all($s_pi, $s_att_decoded, $a_matches);
@@ -1737,6 +1737,7 @@ $a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LIN
 $a_posts_enforced = [];
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
 $a_vk_api_exceptions = sms_data_prepare_exceptions();
+$b_grep_attachments = false;
 $b_need_to_print_first_line = false;
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
 $o_vk_api_client = new VK\Client\VKApiClient();
