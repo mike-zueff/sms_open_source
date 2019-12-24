@@ -96,8 +96,13 @@ function sms_data_parse_from_id_enforced() {
 
 function sms_data_parse_owner_id_enforced() {
   global $a_from_id_enforced;
+  global $a_owner_id_enforced_file;
 
-  $a_result = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
+  $a_result = [];
+
+  foreach ($a_owner_id_enforced_file as $s_oiefi) {
+    array_push($a_result, $s_oiefi);
+  }
 
   foreach ($a_from_id_enforced as $s_fiei) {
     if (!in_array($s_fiei, $a_result)) {
@@ -1736,6 +1741,7 @@ function sms_watched_owners_wall_get() {
 
 $a_default_settlement_enforced = file('private/default_settlement_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_owner_id_common = file('private/owner_id_common.txt', FILE_IGNORE_NEW_LINES);
+$a_owner_id_enforced_file = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns = file('private/patterns_common.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_posts_enforced = [];
