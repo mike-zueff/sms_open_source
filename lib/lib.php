@@ -105,8 +105,34 @@ function sms_data_parse_owner_id_enforced() {
 }
 
 function sms_data_prepare_default_settlements() {
+  global $a_from_id_enforced;
+  global $a_settlements;
+  global $o_sqlite;
+
+  $a_db_data_result = null;
   $a_result = [];
-  //todo
+  $b_is_in_json = false;
+
+  foreach ($a_from_id_enforced as $i_fiei) {
+    $a_db_data_result = $o_sqlite->querySingle("SELECT * FROM users WHERE user_id = $i_fiei", true);
+
+    if ($a_db_data_result != null) {
+      foreach ($a_settlements['items'] as $a_si) {
+        if ($a_si['id'] == $a_db_data_result['settlement_id']) {
+          $b_is_in_json = true;
+
+          break;
+        }
+      }
+
+      if (!$b_is_in_json) {
+        array_push($a_result, $i_fiei);
+      }
+    } else {
+      array_push($a_result, $i_fiei);
+    }
+  }
+
   return $a_result;
 }
 
@@ -1734,7 +1760,6 @@ $s_vk_api_token = trim(file_get_contents('private/vk_api_token.txt'));
 $a_from_id_enforced = sms_data_parse_from_id_enforced();
 $a_default_settlement_enforced = sms_data_prepare_default_settlements();
 $a_owner_id_enforced = sms_data_parse_owner_id_enforced();
-
 date_default_timezone_set('Europe/Moscow');
 $i_timestamp = time();
 $s_date_label = date('y_W|');
