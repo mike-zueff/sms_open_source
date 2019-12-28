@@ -183,11 +183,11 @@ function sms_db_analyze_data_wall_get() {
   global $a_patterns_enforced;
   global $b_grep_attachments;
   global $b_need_to_print_first_line;
+  global $i_counter;
   global $o_sqlite;
   global $s_date_label;
 
   $a_db_data_posts = $o_sqlite->query('SELECT * FROM wall_get ORDER BY from_id');
-  $i_counter = 1;
 
   while ($a_pi = $a_db_data_posts->fetchArray()) {
     $s_att_decoded = base64_decode($a_pi['attachments']);
@@ -273,7 +273,7 @@ function sms_db_analyze_data_wall_get() {
 
         $b_need_for_log = false;
         $sms_log_buffer = '';
-        $sms_log_buffer .= 'Post #' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . ', post' . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_pi['from_id'] . PHP_EOL;
 
         if ($b_settlement_enforced || in_array($a_pi['from_id'], $a_default_settlement_enforced)) {
@@ -389,11 +389,11 @@ function sms_db_analyze_data_wall_get_photos_comments() {
   global $a_patterns;
   global $b_grep_attachments;
   global $b_need_to_print_first_line;
+  global $i_counter;
   global $o_sqlite;
   global $s_date_label;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_get_photos_comments ORDER BY from_id');
-  $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'], $a_ci['from_id'])) {
@@ -474,7 +474,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
 
         $b_need_for_log = false;
         $sms_log_buffer = '';
-        $sms_log_buffer .= 'Photo comment #' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . ', photo comment' . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
         if ($b_settlement_enforced || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
@@ -577,11 +577,11 @@ function sms_db_analyze_data_wall_get_videos_comments() {
   global $a_patterns;
   global $b_grep_attachments;
   global $b_need_to_print_first_line;
+  global $i_counter;
   global $o_sqlite;
   global $s_date_label;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_get_videos_comments ORDER BY from_id');
-  $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'], $a_ci['from_id'])) {
@@ -662,7 +662,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
 
         $b_need_for_log = false;
         $sms_log_buffer = '';
-        $sms_log_buffer .= 'Video comment #' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . ', video comment' . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
         if ($b_settlement_enforced || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
@@ -765,11 +765,11 @@ function sms_db_analyze_data_wall_getcomments() {
   global $a_patterns;
   global $b_grep_attachments;
   global $b_need_to_print_first_line;
+  global $i_counter;
   global $o_sqlite;
   global $s_date_label;
 
   $a_db_data_comments = $o_sqlite->query('SELECT * FROM wall_getcomments ORDER BY from_id');
-  $i_counter = 1;
 
   while ($a_ci = $a_db_data_comments->fetchArray()) {
     if (sms_settlement_check($a_ci['settlement_id'], $a_ci['from_id'])) {
@@ -856,7 +856,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         $b_need_for_log = false;
         $sms_log_buffer = '';
-        $sms_log_buffer .= 'Comment #' . $i_counter . PHP_EOL;
+        $sms_log_buffer .= '#' . $i_counter . ', comment' . PHP_EOL;
         $sms_log_buffer .= base64_decode($a_db_user_data['first_name']) . ' ' . base64_decode($a_db_user_data['last_name']) . ', https://vk.com/id' . $a_ci['from_id'] . PHP_EOL;
 
         if ($b_settlement_enforced || in_array($a_ci['from_id'], $a_default_settlement_enforced)) {
@@ -1752,6 +1752,7 @@ $a_vk_api_exceptions = sms_data_prepare_exceptions();
 $a_watched_owners = file('private/owner_id_common.txt', FILE_IGNORE_NEW_LINES);
 $b_grep_attachments = false;
 $b_need_to_print_first_line = false;
+$i_counter = 1;
 $o_sqlite = new SQLite3('data/sms_db.sqlite');
 $o_vk_api_client = new VK\Client\VKApiClient();
 $r_log_file = fopen('data/log.txt', 'w');
