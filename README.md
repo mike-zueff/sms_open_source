@@ -111,6 +111,11 @@ echo "${D}enforced_post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
 echo "${D}enforced_post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 ```
 
+### Unused owners analysis
+```
+./sms.php -a
+```
+
 ### Corrupted database repair
 ```
 ./sms.php -r
