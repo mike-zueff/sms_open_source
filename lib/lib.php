@@ -1001,6 +1001,9 @@ function sms_db_perform_backup() {
   copy('data/sms_db.sqlite', 'data/sms_db.sqlite_backup_1');
 }
 
+function sms_db_perform_unused_owners_analysis() {
+}
+
 function sms_db_posts_fetch_comments() {
   global $a_ignored_items;
   global $i_timestamp;
@@ -1307,6 +1310,9 @@ function sms_db_posts_fetch_comments() {
       sms_debug('comments are committed successfully');
     }
   }
+}
+
+function sms_db_prepare_unused_owners_analysis() {
 }
 
 function sms_db_vacuum() {

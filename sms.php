@@ -7,10 +7,15 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/lib/lib.php';
 
+$a_getopt_a = getopt('a');
 $a_getopt_c = getopt('c');
 $a_getopt_f = getopt('f');
 $a_getopt_r = getopt('r');
 $s_opt_mode = '';
+
+if (array_key_exists('a', $a_getopt_a)) {
+  $s_opt_mode = 'a';
+}
 
 if (array_key_exists('c', $a_getopt_c)) {
   $s_opt_mode = 'c';
@@ -25,6 +30,16 @@ if (array_key_exists('r', $a_getopt_r)) {
 }
 
 switch ($s_opt_mode) {
+case 'a':
+  sms_db_vacuum();
+  sms_db_prepare_unused_owners_analysis();
+  sms_db_analyze_data_wall_get();
+  sms_db_analyze_data_wall_getcomments();
+  sms_db_analyze_data_wall_get_photos_comments();
+  sms_db_analyze_data_wall_get_videos_comments();
+  sms_db_perform_unused_owners_analysis();
+
+  break;
 case 'c':
   sms_db_vacuum();
   sms_db_posts_fetch_comments();
