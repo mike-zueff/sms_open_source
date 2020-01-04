@@ -111,6 +111,12 @@ echo "${D}enforced_post|OWNER_ID_2|POST_ID_2" >> private/ignored_items.txt
 echo "${D}enforced_post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 ```
 
+### Entire log ignoration
+```
+./sms.php
+./ignore_entire_log.sh
+```
+
 ### Unused owners analysis
 ```
 ./sms.php -a

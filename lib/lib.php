@@ -74,6 +74,7 @@ function sms_data_enforced_post_submit($i_owner_id, $i_post_id) {
 }
 
 function sms_data_parse_from_id_enforced() {
+  global $a_used_owners_initial;
   global $a_watched_owners;
 
   $a_result = [];
@@ -81,6 +82,8 @@ function sms_data_parse_from_id_enforced() {
   foreach ($a_watched_owners as $s_woi) {
     if ($s_woi > 0) {
       array_push($a_result, $s_woi);
+    } else {
+      array_push($a_used_owners_initial, $s_woi);
     }
   }
 
@@ -172,6 +175,18 @@ function sms_data_print_attachment($o_attachment) {
   }
 
   return $s_result . S_TERMINAL_RESET . PHP_EOL;
+}
+
+function sms_data_used_owner_submit($i_owner_id) {
+  global $a_used_owners_real;
+
+  if ($i_owner_id > 0) {
+    return;
+  }
+
+  if (!in_array($i_owner_id, $a_used_owners_real)) {
+    array_push($a_used_owners_real, $i_owner_id);
+  }
 }
 
 function sms_db_analyze_data_wall_get() {
@@ -375,6 +390,7 @@ function sms_db_analyze_data_wall_get() {
 
           sms_log($sms_log_buffer);
           ++$i_counter;
+          sms_data_used_owner_submit($a_pi['owner_id']);
         }
       }
     }
@@ -563,6 +579,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
 
           sms_log($sms_log_buffer);
           ++$i_counter;
+          sms_data_used_owner_submit($a_ci['owner_id']);
         }
       }
     }
@@ -751,6 +768,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
 
           sms_log($sms_log_buffer);
           ++$i_counter;
+          sms_data_used_owner_submit($a_ci['owner_id']);
         }
       }
     }
@@ -946,6 +964,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
           sms_log($sms_log_buffer);
           ++$i_counter;
+          sms_data_used_owner_submit($a_ci['owner_id']);
         }
       }
     }
@@ -1313,6 +1332,11 @@ function sms_db_posts_fetch_comments() {
 }
 
 function sms_db_prepare_unused_owners_analysis() {
+  global $a_ignored_items;
+  global $b_analysis_mode;
+
+  $a_ignored_items = [];
+  $b_analysis_mode = true;
 }
 
 function sms_db_vacuum() {
@@ -1356,10 +1380,14 @@ function sms_fs_parse_ignored_items() {
 }
 
 function sms_log($s_message) {
+  global $b_analysis_mode;
   global $r_log_file;
 
   fwrite($r_log_file, $s_message . PHP_EOL);
-  sms_echo($s_message);
+
+  if (!$b_analysis_mode) {
+    sms_echo($s_message);
+  }
 }
 
 function sms_php_mb_trim($s_string) {
@@ -1754,8 +1782,11 @@ $a_patterns = file('private/patterns_common.txt', FILE_IGNORE_NEW_LINES);
 $a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_posts_enforced = [];
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
+$a_used_owners_initial = [];
+$a_used_owners_real = [];
 $a_vk_api_exceptions = sms_data_prepare_exceptions();
 $a_watched_owners = file('private/owner_id_common.txt', FILE_IGNORE_NEW_LINES);
+$b_analysis_mode = false;
 $b_grep_attachments = false;
 $b_need_to_print_first_line = false;
 $i_counter = 1;

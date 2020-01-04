@@ -31,7 +31,6 @@ if (array_key_exists('r', $a_getopt_r)) {
 
 switch ($s_opt_mode) {
 case 'a':
-  sms_db_vacuum();
   sms_db_prepare_unused_owners_analysis();
   sms_db_analyze_data_wall_get();
   sms_db_analyze_data_wall_getcomments();
