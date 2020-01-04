@@ -1021,6 +1021,17 @@ function sms_db_perform_backup() {
 }
 
 function sms_db_perform_unused_owners_analysis() {
+  global $a_owner_id_enforced;
+  global $a_used_owners_initial;
+  global $a_used_owners_real;
+
+  foreach ($a_used_owners_initial as $i_uoii) {
+    if (!in_array($i_uoii, $a_used_owners_real)) {
+      if (!in_array($i_uoii, $a_owner_id_enforced)) {
+        sms_echo('Unused owner: https://vk.com/wall' . $i_uoii);
+      }
+    }
+  }
 }
 
 function sms_db_posts_fetch_comments() {
