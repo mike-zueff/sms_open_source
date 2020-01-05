@@ -369,7 +369,7 @@ function sms_db_analyze_data_wall_get() {
 
         if ($s_text_decoded != '') {
           $sms_log_buffer .= '  TEXT:' . PHP_EOL;
-          $sms_log_buffer .= S_TERMINAL_GREEN . sms_print_output_multiline($s_text_decoded) . S_TERMINAL_RESET;
+          $sms_log_buffer .= sms_print_output_multiline($s_text_decoded);
         }
 
         if ($s_att_decoded != '') {
@@ -558,7 +558,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
 
         if ($s_text_decoded != '') {
           $sms_log_buffer .= '  TEXT:' . PHP_EOL;
-          $sms_log_buffer .= S_TERMINAL_GREEN . sms_print_output_multiline($s_text_decoded) . S_TERMINAL_RESET;
+          $sms_log_buffer .= sms_print_output_multiline($s_text_decoded);
         }
 
         if ($s_att_decoded != '') {
@@ -747,7 +747,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
 
         if ($s_text_decoded != '') {
           $sms_log_buffer .= '  TEXT:' . PHP_EOL;
-          $sms_log_buffer .= S_TERMINAL_GREEN . sms_print_output_multiline($s_text_decoded) . S_TERMINAL_RESET;
+          $sms_log_buffer .= sms_print_output_multiline($s_text_decoded);
         }
 
         if ($s_att_decoded != '') {
@@ -943,7 +943,7 @@ function sms_db_analyze_data_wall_getcomments() {
 
         if ($s_text_decoded != '') {
           $sms_log_buffer .= '  TEXT:' . PHP_EOL;
-          $sms_log_buffer .= S_TERMINAL_GREEN . sms_print_output_multiline($s_text_decoded) . S_TERMINAL_RESET;
+          $sms_log_buffer .= sms_print_output_multiline($s_text_decoded);
         }
 
         if ($s_att_decoded != '') {
@@ -1409,7 +1409,7 @@ function sms_print_output_multiline($s_output) {
   $s_result = '';
 
   for ($i = 0; $i < mb_strlen($s_output); $i += I_MAX_LINE_SIZE - mb_strlen('  ')) {
-    $s_result .= '  ' . sms_php_mb_trim(mb_substr($s_output, $i, I_MAX_LINE_SIZE - mb_strlen('  '))) . PHP_EOL;
+    $s_result .= S_TERMINAL_GREEN . '  ' . sms_php_mb_trim(mb_substr($s_output, $i, I_MAX_LINE_SIZE - mb_strlen('  '))) . S_TERMINAL_RESET . PHP_EOL;
   }
 
   return $s_result;
