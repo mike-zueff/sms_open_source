@@ -54,11 +54,11 @@ echo "/PATTERN_3/iu" >> private/patterns_enforced.txt
 ```
 ./sms.php -f
 clear; ./sms.php
-vim -O private/{ignored_items,complaints}.txt
+vim -O private/{ignored_items,owner_id_common,complaints}.txt
 clear; ./sms.php
-vim -O private/{ignored_items,complaints}.txt
+vim -O private/{ignored_items,owner_id_common,complaints}.txt
 clear; ./sms.php
-vim -O private/{ignored_items,complaints}.txt
+vim -O private/{ignored_items,owner_id_common,complaints}.txt
 clear; ./sms.php
 ```
 
