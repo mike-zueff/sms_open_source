@@ -9,6 +9,7 @@ require __DIR__ . '/lib/lib.php';
 
 $a_getopt_a = getopt('a');
 $a_getopt_c = getopt('c');
+$a_getopt_d = getopt('d:');
 $a_getopt_f = getopt('f');
 $a_getopt_r = getopt('r');
 $s_opt_mode = '';
@@ -19,6 +20,10 @@ if (array_key_exists('a', $a_getopt_a)) {
 
 if (array_key_exists('c', $a_getopt_c)) {
   $s_opt_mode = 'c';
+}
+
+if (array_key_exists('d', $a_getopt_d)) {
+  $s_opt_mode = 'd';
 }
 
 if (array_key_exists('f', $a_getopt_f)) {
@@ -44,6 +49,10 @@ case 'c':
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
   sms_db_perform_backup();
+
+  break;
+case 'd':
+  sms_db_remove_user($a_getopt_d['d']);
 
   break;
 case 'f':

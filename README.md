@@ -132,6 +132,11 @@ echo "${D}enforced_post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 ./sms.php -c
 ```
 
+### User removal procedure
+```
+./sms.php -dUSER_ID
+```
+
 ## Credits
 Author: Mike Zueff
 

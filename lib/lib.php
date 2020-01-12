@@ -1350,6 +1350,12 @@ function sms_db_prepare_unused_owners_analysis() {
   $b_analysis_mode = true;
 }
 
+function sms_db_remove_user($i_user_id) {
+  global $o_sqlite;
+
+  $o_sqlite->exec("DELETE FROM users WHERE user_id = $i_user_id");
+}
+
 function sms_db_vacuum() {
   global $o_sqlite;
 
