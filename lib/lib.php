@@ -35,9 +35,11 @@ function sms_data_check_a_t($s_attachments) {
 
   foreach ($o_attachments as $o_a) {
     switch ($o_a['type']) {
+    case 'audio':
     case 'link':
     case 'photo':
     case 'sticker':
+    case 'video':
       $b_at_least_one_inane = true;
 
       break;
