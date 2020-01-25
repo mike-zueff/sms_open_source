@@ -25,9 +25,8 @@ cd sms_open_source
 cat data/init.sql | sqlite3 data/sms_db.sqlite
 composer require vkcom/vk-php-sdk
 touch data/sms_db.sqlite_backup_{1,2,3}
-mkdir private
+mkdir -p complaints/{done,todo} private
 echo "TOKEN" > private/vk_api_token.txt
-touch private/complaints.txt
 
 echo "-GROUP_1" > private/owner_id_common.txt
 echo "-GROUP_2" >> private/owner_id_common.txt
@@ -54,11 +53,11 @@ echo "/PATTERN_3/iu" >> private/patterns_enforced.txt
 ```
 ./sms.php -f
 clear; ./sms.php
-vim -O private/{ignored_items,owner_id_common,complaints}.txt
+vim -O private/{ignored_items,owner_id_common}.txt
 clear; ./sms.php
-vim -O private/{ignored_items,owner_id_common,complaints}.txt
+vim -O private/{ignored_items,owner_id_common}.txt
 clear; ./sms.php
-vim -O private/{ignored_items,owner_id_common,complaints}.txt
+vim -O private/{ignored_items,owner_id_common}.txt
 clear; ./sms.php
 ```
 
