@@ -44,6 +44,10 @@ echo "/PATTERN_1/iu" > private/patterns_common.txt
 echo "/PATTERN_2/iu" >> private/patterns_common.txt
 echo "/PATTERN_3/iu" >> private/patterns_common.txt
 
+echo "/PATTERN_1/iu" > private/patterns_additional.txt
+echo "/PATTERN_2/iu" >> private/patterns_additional.txt
+echo "/PATTERN_3/iu" >> private/patterns_additional.txt
+
 echo "/PATTERN_1/iu" > private/patterns_enforced.txt
 echo "/PATTERN_2/iu" >> private/patterns_enforced.txt
 echo "/PATTERN_3/iu" >> private/patterns_enforced.txt

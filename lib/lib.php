@@ -152,6 +152,22 @@ function sms_data_prepare_exceptions() {
   return $a_result;
 }
 
+function sms_data_prepare_patterns() {
+  $a_patterns_additional = file('private/patterns_additional.txt', FILE_IGNORE_NEW_LINES);
+  $a_patterns_common = file('private/patterns_common.txt', FILE_IGNORE_NEW_LINES);
+  $a_result = [];
+
+  foreach ($a_patterns_common as $s_pci) {
+    array_push($a_result, $s_pci);
+  }
+
+  foreach ($a_patterns_additional as $s_pai) {
+    array_push($a_result, $s_pai);
+  }
+
+  return $a_result;
+}
+
 function sms_data_print_attachment($o_attachment) {
   $s_result = '  ' . S_TERMINAL_GREEN;
 
@@ -1936,7 +1952,7 @@ function sms_watched_owners_wall_get() {
 }
 
 $a_owner_id_enforced_file = file('private/owner_id_enforced.txt', FILE_IGNORE_NEW_LINES);
-$a_patterns = file('private/patterns_common.txt', FILE_IGNORE_NEW_LINES);
+$a_patterns = sms_data_prepare_patterns();
 $a_patterns_enforced = file('private/patterns_enforced.txt', FILE_IGNORE_NEW_LINES);
 $a_posts_enforced = [];
 $a_settlements = json_decode(file_get_contents('data/settlements.json'), true);
