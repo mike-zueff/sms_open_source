@@ -62,6 +62,7 @@ case 'f':
   sms_db_delete_obsolete_photos_comments();
   sms_db_delete_obsolete_videos_comments();
   sms_watched_owners_wall_get();
+  sms_enforced_users_newsfeed_getmentions();
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
   sms_db_perform_backup();
