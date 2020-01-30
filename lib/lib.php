@@ -1414,7 +1414,21 @@ function sms_enforced_users_newsfeed_getmentions() {
       if ($o_result != null) {
         foreach ($o_result['items'] as $o_ri) {
           $i_db_getmentions_owner_id = $o_ri['to_id'];
-          $i_db_getmentions_post_id = $o_ri['post_id'];
+
+          switch ($o_ri['post_type']) {
+          case 'post':
+            $i_db_getmentions_post_id = $o_ri['id'];
+
+            break;
+          case 'reply':
+            $i_db_getmentions_post_id = $o_ri['post_id'];
+
+            break;
+          case 'default':
+            $i_db_getmentions_post_id = $o_ri['post_id'];
+
+            break;
+          }
 
           $o_result_getbyid = sms_vk_api_wall_getbyid($i_db_getmentions_owner_id, $i_db_getmentions_post_id);
 
