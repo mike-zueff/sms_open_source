@@ -11,8 +11,10 @@ const I_E_TOO_MANY_REQUESTS_PER_SECOND = 6;
 const I_MAX_LINE_SIZE = 80;
 const I_NULL_VALUE = -1;
 const I_USLEEP_TIME = 2.1 * 1000 * 1000;
+const I_VK_API_NEWSFEED_GETMENTIONS_COUNT_DEFAULT = 50;
 const I_VK_API_PHOTOS_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_VIDEO_GETCOMMENTS_COUNT_DEFAULT = 100;
+const I_VK_API_WALL_GETBYID_COPY_HISTORY_DEPTH_DEFAULT = 0;
 const I_VK_API_WALL_GETCOMMENTS_COUNT_DEFAULT = 100;
 const I_VK_API_WALL_GETCOMMENTS_THREAD_ITEMS_COUNT_DEFAULT = 10;
 const I_VK_API_WALL_GET_COUNT_DEFAULT = 100;
@@ -1376,6 +1378,84 @@ function sms_echo($s_message) {
   echo $s_message . PHP_EOL;
 }
 
+function sms_enforced_users_newsfeed_getmentions() {
+  global $a_from_id_enforced;
+  global $i_timestamp;
+  global $o_sqlite;
+
+  $i_enforced_users_counter = 0;
+
+  foreach ($a_from_id_enforced as $i_fie) {
+    $i_offset = 0;
+
+    ++$i_enforced_users_counter;
+    sms_echo('Processing newsfeeds (' . $i_enforced_users_counter . ' of ' . count($a_from_id_enforced) . ')...');
+
+    do {
+      $b_need_for_break = false;
+      $o_result = sms_vk_api_newsfeed_getmentions($i_fie, $i_offset);
+
+      if ($o_result != null) {
+        foreach ($o_result['items'] as $o_ri) {
+          $i_db_getmentions_owner_id = $o_ri['to_id'];
+          $i_db_getmentions_post_id = $o_ri['post_id'];
+
+          $o_result_getbyid = sms_vk_api_wall_getbyid($i_db_getmentions_owner_id, $i_db_getmentions_post_id);
+
+          if ($o_result_getbyid != null) {
+            $o_result_getbyid = $o_result_getbyid[0];
+
+            $i_db_date = $o_result_getbyid['date'];
+            $i_db_from_id = $o_result_getbyid['from_id'];
+            $i_db_owner_id = $o_result_getbyid['owner_id'];
+            $i_db_post_id = $o_result_getbyid['id'];
+            $s_db_text = base64_encode($o_result_getbyid['text']);
+
+            if (array_key_exists('attachments', $o_result_getbyid)) {
+              $s_db_attachments = base64_encode(serialize($o_result_getbyid['attachments']));
+            } else {
+              $s_db_attachments = base64_encode('');
+            }
+
+            if (array_key_exists('is_pinned', $o_result_getbyid)) {
+              if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
+                continue;
+              }
+            } else {
+              if ($o_sqlite->querySingle("SELECT * FROM wall_get WHERE owner_id = $i_db_owner_id AND post_id = $i_db_post_id", true) != null) {
+                continue;
+              }
+
+              if ($i_timestamp > $i_db_date + I_DATE_LIMIT_WALL_GET) {
+                $b_need_for_break = true;
+
+                break;
+              }
+            }
+
+            $a_db_user_data = sms_user_fetch_data($i_db_from_id);
+            $i_db_settlement_id = $a_db_user_data['settlement_id'];
+
+            $o_sqlite->exec("REPLACE INTO wall_get(attachments, comments_are_committed, settlement_id, date, from_id, owner_id, post_id, text) VALUES('$s_db_attachments', 0, $i_db_settlement_id, $i_db_date, $i_db_from_id, $i_db_owner_id, $i_db_post_id, '$s_db_text')");
+          } else {
+            sms_debug('error, wall.getbyid, https://vk.com/wall' . $i_db_getmentions_owner_id . '_' . $i_db_getmentions_post_id);
+          }
+        }
+      } else {
+        sms_debug('error, newsfeed.getmentions, ' . $i_offset . ', https://vk.com/feed?obj=' . $i_fie . '&section=mentions');
+
+        break;
+      }
+
+      $i_offset += I_VK_API_NEWSFEED_GETMENTIONS_COUNT_DEFAULT;
+
+      if ($b_need_for_break || empty($o_result['items'])) {
+        break;
+      }
+    } while (true);
+  }
+}
+
 function sms_fs_parse_ignored_items() {
   global $s_date_label;
 
@@ -1534,6 +1614,36 @@ function sms_user_fetch_data($i_user_id) {
   return $a_db_user_data;
 }
 
+function sms_vk_api_newsfeed_getmentions($i_owner_id, $i_offset) {
+  global $a_vk_api_exceptions;
+  global $o_vk_api_client;
+  global $s_vk_api_token;
+
+  sms_debug('newsfeed.getmentions | ' . $i_owner_id . ' | ' . $i_offset);
+  sms_debug('https://vk.com/feed?obj=' . $i_owner_id . '&section=mentions');
+
+  do {
+    try {
+      $o_response = $o_vk_api_client->newsfeed()->getMentions($s_vk_api_token, array(
+        'count' => I_VK_API_NEWSFEED_GETMENTIONS_COUNT_DEFAULT,
+        'offset' => $i_offset,
+        'owner_id' => $i_owner_id,
+      ));
+
+      sms_debug('done');
+
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
+      }
+    }
+  } while (true);
+}
+
 function sms_vk_api_photos_getcomments($i_owner_id, $i_post_id, $i_photo_owner_id, $i_photo_id, $i_offset, $s_access_key) {
   global $a_vk_api_exceptions;
   global $o_vk_api_client;
@@ -1665,6 +1775,35 @@ function sms_vk_api_wall_get($i_owner_id, $i_offset) {
         'count' => I_VK_API_WALL_GET_COUNT_DEFAULT,
         'offset' => $i_offset,
         'owner_id' => $i_owner_id,
+      ));
+
+      sms_debug('done');
+
+      return $o_response;
+    } catch (Exception $e) {
+      if (!in_array($e->getCode(), $a_vk_api_exceptions)) {
+        return null;
+      } else {
+        sms_debug('exception occured, trying to send the request again...');
+        usleep(I_USLEEP_TIME);
+      }
+    }
+  } while (true);
+}
+
+function sms_vk_api_wall_getbyid($i_owner_id, $i_post_id) {
+  global $a_vk_api_exceptions;
+  global $o_vk_api_client;
+  global $s_vk_api_token;
+
+  sms_debug('wall.getbyid | ' . $i_owner_id . ' | ' . $i_post_id);
+  sms_debug('https://vk.com/wall' . $i_owner_id . '_' . $i_post_id);
+
+  do {
+    try {
+      $o_response = $o_vk_api_client->wall()->getById($s_vk_api_token, array(
+        'copy_history_depth' => I_VK_API_WALL_GETBYID_COPY_HISTORY_DEPTH_DEFAULT,
+        'posts' => $i_owner_id . '_' . $i_post_id,
       ));
 
       sms_debug('done');
