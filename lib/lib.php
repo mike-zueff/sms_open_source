@@ -1081,7 +1081,7 @@ function sms_db_posts_fetch_comments() {
     ++$i_db_data_posts_counter;
     sms_echo('Processing posts (' . $i_db_data_posts_counter . ' of ' . $i_db_data_rows_count . ')...');
 
-    if (in_array('owner|' . $a_pi['owner_id'], $a_ignored_items)) {
+    if (in_array('owner_id|' . $a_pi['owner_id'], $a_ignored_items)) {
       sms_echo('Skipping...');
 
       continue;
@@ -1442,7 +1442,7 @@ function sms_enforced_users_newsfeed_getmentions() {
             $i_db_post_id = $o_result_getbyid['id'];
             $s_db_text = base64_encode($o_result_getbyid['text']);
 
-            if (in_array('owner|' . $i_db_owner_id, $a_ignored_items)) {
+            if (in_array('owner_id|' . $i_db_owner_id, $a_ignored_items)) {
               sms_echo('Skipping...');
 
               continue;
