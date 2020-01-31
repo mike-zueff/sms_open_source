@@ -1424,7 +1424,7 @@ function sms_enforced_users_newsfeed_getmentions() {
             $i_db_getmentions_post_id = $o_ri['post_id'];
 
             break;
-          case 'default':
+          default:
             $i_db_getmentions_post_id = $o_ri['post_id'];
 
             break;
