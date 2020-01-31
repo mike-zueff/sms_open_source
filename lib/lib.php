@@ -1396,6 +1396,7 @@ function sms_echo($s_message) {
 
 function sms_enforced_users_newsfeed_getmentions() {
   global $a_from_id_enforced;
+  global $a_ignored_items;
   global $i_timestamp;
   global $o_sqlite;
 
@@ -1440,6 +1441,12 @@ function sms_enforced_users_newsfeed_getmentions() {
             $i_db_owner_id = $o_result_getbyid['owner_id'];
             $i_db_post_id = $o_result_getbyid['id'];
             $s_db_text = base64_encode($o_result_getbyid['text']);
+
+            if (in_array('owner|' . $i_db_owner_id, $a_ignored_items)) {
+              sms_echo('Skipping...');
+
+              continue;
+            }
 
             if (array_key_exists('attachments', $o_result_getbyid)) {
               $s_db_attachments = base64_encode(serialize($o_result_getbyid['attachments']));
