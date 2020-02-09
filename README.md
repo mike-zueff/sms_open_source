@@ -53,18 +53,6 @@ echo "/PATTERN_2/iu" >> private/patterns_enforced.txt
 echo "/PATTERN_3/iu" >> private/patterns_enforced.txt
 ```
 
-### Weekly steps
-```
-./sms.php -f
-clear; ./sms.php
-vim -O private/{ignored_items,owner_id_common}.txt
-clear; ./sms.php
-vim -O private/{ignored_items,owner_id_common}.txt
-clear; ./sms.php
-vim -O private/{ignored_items,owner_id_common}.txt
-clear; ./sms.php
-```
-
 ### Data masking example
 ```
 D=$(date "+%y_%V|")
@@ -138,6 +126,18 @@ echo "${D}enforced_post|OWNER_ID_3|POST_ID_3" >> private/ignored_items.txt
 ### User removal procedure
 ```
 ./sms.php -dUSER_ID
+```
+
+### Weekly steps
+```
+./sms.php -f
+clear; ./sms.php
+vim -O private/{ignored_items,owner_id_common}.txt
+clear; ./sms.php
+vim -O private/{ignored_items,owner_id_common}.txt
+clear; ./sms.php
+vim -O private/{ignored_items,owner_id_common}.txt
+clear; ./sms.php
 ```
 
 ## Credits
