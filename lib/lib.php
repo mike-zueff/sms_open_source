@@ -118,10 +118,10 @@ function sms_data_prepare_default_settlements() {
 
   $a_db_data_result = null;
   $a_result = [];
-  $b_is_in_json = false;
 
   foreach ($a_from_id_enforced as $i_fiei) {
     $a_db_data_result = $o_sqlite->querySingle("SELECT * FROM users WHERE user_id = $i_fiei", true);
+    $b_is_in_json = false;
 
     if ($a_db_data_result != null) {
       foreach ($a_settlements['items'] as $a_si) {
@@ -1557,10 +1557,6 @@ function sms_print_repeat($s_fragment, $i_count) {
 function sms_settlement_check($i_settlement_id, $i_from_id) {
   global $a_default_settlement_enforced;
   global $a_settlements;
-
-  if($i_settlement_id < 0) {
-    return false;
-  }
 
   foreach ($a_settlements['items'] as $a_si) {
     if ($a_si['id'] == $i_settlement_id) {
