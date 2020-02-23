@@ -529,6 +529,7 @@ function sms_db_analyze_data_wall_get_photos_comments() {
 
         if ($a_ci['access_key'] != '') {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?z=photo' . $a_ci['photo_owner_id'] . '_' . $a_ci['photo_id'] . '/' . $a_ci['access_key'] . PHP_EOL;
+          $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?z=photo' . $a_ci['photo_owner_id'] . '_' . $a_ci['photo_id'] . PHP_EOL;
         } else {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?z=photo' . $a_ci['photo_owner_id'] . '_' . $a_ci['photo_id'] . PHP_EOL;
         }
@@ -718,6 +719,7 @@ function sms_db_analyze_data_wall_get_videos_comments() {
 
         if ($a_ci['access_key'] != '') {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?z=video' . $a_ci['video_owner_id'] . '_' . $a_ci['video_id'] . '/' . $a_ci['access_key'] . PHP_EOL;
+          $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?z=video' . $a_ci['video_owner_id'] . '_' . $a_ci['video_id'] . PHP_EOL;
         } else {
           $sms_log_buffer .= 'https://vk.com/wall' . $a_ci['owner_id'] . '_' . $a_ci['post_id'] . '?z=video' . $a_ci['video_owner_id'] . '_' . $a_ci['video_id'] . PHP_EOL;
         }
