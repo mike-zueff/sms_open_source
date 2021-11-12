@@ -48,6 +48,7 @@ case 'c':
   sms_db_vacuum();
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
+  sms_db_vacuum();
   sms_db_perform_backup();
 
   break;
@@ -65,10 +66,12 @@ case 'f':
   sms_enforced_users_newsfeed_getmentions();
   sms_db_posts_fetch_comments();
   sms_db_vacuum();
+  sms_db_vacuum();
   sms_db_perform_backup();
 
   break;
 case 'r':
+  sms_db_vacuum();
   sms_db_vacuum();
 
   break;
